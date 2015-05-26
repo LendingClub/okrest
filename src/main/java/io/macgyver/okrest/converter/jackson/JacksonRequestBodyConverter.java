@@ -1,4 +1,6 @@
-package io.macgyver.okrest.converter;
+package io.macgyver.okrest.converter.jackson;
+
+import io.macgyver.okrest.converter.RequestBodyConverter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

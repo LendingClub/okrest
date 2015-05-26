@@ -2,6 +2,7 @@ package io.macgyver.okrest.converter;
 
 import io.macgyver.okrest.OkRestException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,14 +34,14 @@ public class ConverterRegistry {
 
 		requestConverters.add(new PassThroughRequestBodyConverter());
 		addRequestBodyConverter(
-				"io.macgyver.okrest.converter.JacksonRequestBodyConverter",
+				"io.macgyver.okrest.converter.jackson.JacksonRequestBodyConverter",
 				false); // do not fail
 		requestConverters.add(new StringRequestBodyConverter());
 		requestConverters.add(new FileRequestBodyConverter());
 		requestConverters.add(new ByteArrayRequestBodyConverter());
 
 		addResponseBodyConverter(
-				"io.macgyver.okrest.converter.JacksonResponseBodyConverter",
+				"io.macgyver.okrest.converter.jackson.JacksonResponseBodyConverter",
 				false);
 		responseConverters.add(new StringResponseBodyConverter());
 		responseConverters.add(new ByteArrayResponseBodyConverter());
@@ -179,6 +180,7 @@ public class ConverterRegistry {
 		@Override
 		public <T> T convert(Response r, Class<? extends T> t)
 				throws IOException {
+			
 			return (T) r.body().byteStream();
 		}
 

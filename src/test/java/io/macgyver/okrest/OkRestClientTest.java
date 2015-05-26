@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import okio.Buffer;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
@@ -67,7 +69,7 @@ public class OkRestClientTest {
 	
 		
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeaders("X-foo")).contains("bar","baz");
+		Assertions.assertThat(rr.getHeaders().values("X-foo")).contains("bar","baz");
 	}
 	@Test
 	public void testAddHeaderThenHeader() throws IOException, InterruptedException{
@@ -78,7 +80,7 @@ public class OkRestClientTest {
 		Assertions.assertThat(s).isEqualTo("hello");
 
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeaders("X-foo")).contains("oof").hasSize(1);
+		Assertions.assertThat(rr.getHeaders().values("X-foo")).contains("oof").hasSize(1);
 	}
 	@Test
 	public void testCreate() {
@@ -390,8 +392,11 @@ public class OkRestClientTest {
 	
 	@Test
 	public void testInputStreamResponse()  throws InterruptedException, IOException {
-		byte [] x = {0,1,2};
-		mockServer.enqueue(new MockResponse().setBody(x));
+		byte [] x = "hello".getBytes();
+		Buffer b = new Buffer().write(x);
+
+
+		mockServer.enqueue(new MockResponse().setBody(b));
 		InputStream x1 = target.path("/").get().execute(InputStream.class);
 		byte [] bx1 = ByteStreams.toByteArray(x1);
 		
@@ -410,8 +415,10 @@ public class OkRestClientTest {
 	@Test
 	public void testByteArrayResponse()  throws InterruptedException, IOException {
 		byte [] x = {0,1,2};
-		mockServer.enqueue(new MockResponse().setBody(x));
+		
+		mockServer.enqueue(new MockResponse().setBody(new Buffer().write(x)));
 		byte [] x1 = target.path("/").get().execute(byte[].class);
+		Assert.assertArrayEquals(x, x1);
 		Assertions.assertThat(x1).isEqualTo(x);
 	}
 }

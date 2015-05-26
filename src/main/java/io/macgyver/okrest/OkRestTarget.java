@@ -6,44 +6,24 @@ import io.macgyver.okrest.converter.RequestBodyConverter;
 import io.macgyver.okrest.converter.ResponseBodyConverter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 public class OkRestTarget {
 
 	public static final MediaType APPLICATION_JSON = MediaType
 			.parse("application/json");
 	protected OkRestClient okRestClient;
-
-	ObjectMapper mapper = new ObjectMapper();
 
 	protected OkUriBuilder uriBuilder = new OkUriBuilder();
 
@@ -160,9 +140,7 @@ public class OkRestTarget {
 
 	}
 
-	public static OkRestTarget create() {
-		return new OkRestClient().uri("");
-	}
+
 
 	public OkRestTarget clone() {
 		OkRestTarget r = new OkRestTarget();

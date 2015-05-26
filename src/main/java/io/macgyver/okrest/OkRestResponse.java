@@ -3,10 +3,7 @@ package io.macgyver.okrest;
 import io.macgyver.okrest.converter.ResponseBodyConverter;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Response;

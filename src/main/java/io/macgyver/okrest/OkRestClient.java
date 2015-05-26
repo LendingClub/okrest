@@ -1,11 +1,11 @@
 package io.macgyver.okrest;
 
+import io.macgyver.okrest.compat.OkUriBuilder;
+import io.macgyver.okrest.converter.ConverterRegistry;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-
-import io.macgyver.okrest.compat.OkUriBuilder;
-import io.macgyver.okrest.converter.ConverterRegistry;
 
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.OkHttpClient;

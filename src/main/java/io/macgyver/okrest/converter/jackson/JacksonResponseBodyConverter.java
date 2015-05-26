@@ -1,4 +1,6 @@
-package io.macgyver.okrest.converter;
+package io.macgyver.okrest.converter.jackson;
+
+import io.macgyver.okrest.converter.ResponseBodyConverter;
 
 import java.io.IOException;
 import java.io.InputStream;
