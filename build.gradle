@@ -1,0 +1,137 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven'
+//apply plugin: 'application'
+apply plugin: "jacoco"
+apply plugin: "signing"
+
+group 'io.macgyver.okrest'
+version = "1.0.0"
+
+configurations {
+	//all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
+	all*.exclude group: 'log4j'
+	all*.exclude group: 'xml-apis'
+    all*.exclude group: 'commons-logging'
+}
+
+repositories {
+   mavenLocal()
+   mavenCentral()
+   jcenter()
+   
+
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+dependencies {
+
+
+	compile "com.fasterxml.jackson.core:jackson-databind:${JACKSON_VERSION}"
+	compile "com.squareup.okhttp:okhttp:${OKHTTP_VERSION}"
+	compile "org.slf4j:slf4j-api:${SLF4J_VERSION}"
+    compile 'com.google.guava:guava:18.0'
+	
+	testCompile 'org.assertj:assertj-core:1.7.0'   
+	testCompile "junit:junit:${JUNIT_VERSION}"
+	testCompile "com.squareup.okhttp:mockwebserver:${OKHTTP_VERSION}"
+	testCompile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
+	testCompile "org.slf4j:jul-to-slf4j:${SLF4J_VERSION}"
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+	
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+	
+	
+}
+
+artifacts {
+        archives sourcesJar, javadocJar
+}
+uploadArchives {
+    repositories {
+        mavenDeployer {
+			
+            name = 'macgyver-bintray'
+            if (!project.hasProperty('bintrayUser')) {
+                project.ext['bintrayUser']=""
+            }
+            if (!project.hasProperty('bintrayKey')) {
+                project.ext['bintrayKey']=""
+            }
+			
+			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+			
+            repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/robschoening/io-macgyver/okrest'){
+                authentication(userName: bintrayUser, password: bintrayKey)
+			}
+            pom.project {
+				
+				name 'okrest'
+				description 'REST Client for Neo4j'
+				url 'https://github.com/if6was9/okhttp'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+						distribution 'repo'
+                    }
+                }
+				scm {
+					connection 'scm:git:git@github.com:if6was9/okhttp.git'
+					developerConnection 'scm:git:git@github.com:if6was9/okhttp.git'
+					url 'git@github.com:if6was9/okhttp.git'
+				}
+            	developers {
+					developer {
+						name 'Rob Schoening'
+						email 'robschoening@gmail.com'
+					}
+				}
+            }
+        }
+    }
+}
+
+signing {
+	sign configurations.archives
+}
+
+signArchives.onlyIf { 
+	def signingPropertiesSet = project.ext.has('signing.keyId') 
+	if (!signingPropertiesSet) {
+		println "properties required to sign artifacts not set -- disabling code signing"
+	}
+	return signingPropertiesSet
+}
+
+jacocoTestReport {
+    group = "reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
+    }
+    //classDirectories = fileTree(dir: 'build/classes/main', include: 'com/thc/**')
+    //sourceDirectories = fileTree(dir: 'scr/java', include: 'com/thc/**')
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+}
+
+task (none) << {
+	// dummy task to do nothing
+}
