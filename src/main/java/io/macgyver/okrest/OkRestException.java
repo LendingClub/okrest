@@ -6,6 +6,8 @@ import com.squareup.okhttp.Response;
 
 public class OkRestException extends IOException {
 
+	
+	private static final long serialVersionUID = 1L;
 	int statusCode;
 	public OkRestException(int statusCode) {
 		super("statusCode="+statusCode);

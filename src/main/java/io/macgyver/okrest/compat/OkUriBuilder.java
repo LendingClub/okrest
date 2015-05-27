@@ -4,9 +4,6 @@ package io.macgyver.okrest.compat;
 
 
 
-import io.macgyver.okrest.OkRestException;
-
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -163,7 +160,7 @@ public class OkUriBuilder
          if (hostPortMatch.matches())
          {
             this.host = hostPortMatch.group(1);
-            int val = 0;
+         
             try {
                this.port = Integer.parseInt(hostPortMatch.group(2));
             }
@@ -886,8 +883,7 @@ public class OkUriBuilder
       }
       // don't set values if values is null
       if (values == null) return this;
-      // don't set values if values is null
-      if (values == null) return this;
+
       return queryParam(name, values);
    }
 

@@ -16,10 +16,11 @@ public class JacksonResponseBodyConverter extends ResponseBodyConverter {
 	ObjectMapper mapper = new ObjectMapper();
 	
 	@Override
-	public boolean supports(Class t, Optional<MediaType> mediaType) {
+	public boolean supports(Class <? extends Object>t, Optional<MediaType> mediaType) {
 		return JsonNode.class.isAssignableFrom(t);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T convert(Response r, Class<? extends T> t) throws IOException {
 		try (InputStream is = r.body().byteStream()) {

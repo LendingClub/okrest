@@ -1,7 +1,7 @@
 package io.macgyver.okrest;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
-import io.macgyver.okrest.compat.OkUriBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,18 +9,18 @@ import java.io.Reader;
 
 import okio.Buffer;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import com.squareup.okhttp.Interceptor;
@@ -30,7 +30,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
 import com.squareup.okhttp.mockwebserver.RecordedRequest;
 import com.squareup.okhttp.mockwebserver.rule.MockWebServerRule;
 
@@ -41,47 +40,66 @@ public class OkRestClientTest {
 
 	OkRestTarget target;
 
+	@BeforeClass
+	public static void bridgeLogger() {
+		if (!SLF4JBridgeHandler.isInstalled()) {
+			SLF4JBridgeHandler.removeHandlersForRootLogger();
+			SLF4JBridgeHandler.install();
+		}
+	}
+
 	@Before
 	public void setup() {
 
-		target = new OkRestClient()
-				.uri(mockServer.getUrl("/"));
+		target = new OkRestClient().uri(mockServer.getUrl("/"));
+		target.getOkHttpClient().interceptors().add(new OkRestLoggingInterceptor());
+		
 	}
 
 	@Test
 	public void testInstances() {
 		OkRestClient c = new OkRestClient();
-		Assertions.assertThat(c.getOkHttpClient()).isNotNull()
+		assertThat(c.getOkHttpClient()).isNotNull()
 				.isSameAs(c.getOkHttpClient());
 
 		OkRestClient c2 = new OkRestClient();
-		Assertions.assertThat(c2.getOkHttpClient()).isNotSameAs(
+		assertThat(c2.getOkHttpClient()).isNotSameAs(
 				c.getOkHttpClient());
+
+		assertThat(c.getConverterRegistry()).isNotSameAs(
+				c2.getConverterRegistry());
 	}
 
 	@Test
-	public void testAddHeader() throws IOException, InterruptedException{
+	public void testAddHeader() throws IOException, InterruptedException {
 		mockServer.enqueue(new MockResponse().setBody("hello"));
-		
-		String s = target.path("/test").header("X-foo","bar").addHeader("X-foo", "baz").get().execute(String.class);
 
-		Assertions.assertThat(s).isEqualTo("hello");
-	
-		
+		String s = target.path("/test").header("X-foo", "bar")
+				.addHeader("X-foo", "baz").get().execute(String.class);
+
+		assertThat(s).isEqualTo("hello");
+
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeaders().values("X-foo")).contains("bar","baz");
+		assertThat(rr.getHeaders().values("X-foo")).contains("bar",
+				"baz");
 	}
+
 	@Test
-	public void testAddHeaderThenHeader() throws IOException, InterruptedException{
+	public void testAddHeaderThenHeader() throws IOException,
+			InterruptedException {
 		mockServer.enqueue(new MockResponse().setBody("hello"));
-		
-		String s = target.path("/test").header("X-foo","bar").addHeader("X-foo", "baz").header("X-foo", "oof").get().execute(String.class);
 
-		Assertions.assertThat(s).isEqualTo("hello");
+		String s = target.path("/test").header("X-foo", "bar")
+				.addHeader("X-foo", "baz").header("X-foo", "oof").get()
+				.execute(String.class);
+
+		assertThat(s).isEqualTo("hello");
 
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeaders().values("X-foo")).contains("oof").hasSize(1);
+		assertThat(rr.getHeaders().values("X-foo")).contains("oof")
+				.hasSize(1);
 	}
+
 	@Test
 	public void testCreate() {
 		OkRestClient c = new OkRestClient();
@@ -92,15 +110,15 @@ public class OkRestClientTest {
 
 		OkRestTarget r2 = r.path("abc");
 
-		Assertions.assertThat(r).isNotSameAs(r2);
-		Assertions.assertThat(r.getOkRestClient()).isSameAs(
+		assertThat(r).isNotSameAs(r2);
+		assertThat(r.getOkRestClient()).isSameAs(
 				r2.getOkRestClient());
-		Assertions.assertThat(r.getOkHttpClient()).isSameAs(
+		assertThat(r.getOkHttpClient()).isSameAs(
 				r2.getOkHttpClient());
 
-		Assertions.assertThat(r2.getUrl().toString()).isEqualTo(
+		assertThat(r2.getUrl().toString()).isEqualTo(
 				"https://www.google.com/abc");
-		Assertions.assertThat(r.getUrl().toString()).isEqualTo(
+		assertThat(r.getUrl().toString()).isEqualTo(
 				"https://www.google.com");
 
 	}
@@ -115,15 +133,15 @@ public class OkRestClientTest {
 
 		OkRestTarget r2 = r.path("abc").queryParameter("a", "1");
 
-		Assertions.assertThat(r).isNotSameAs(r2);
-		Assertions.assertThat(r.getOkRestClient()).isSameAs(
+		assertThat(r).isNotSameAs(r2);
+		assertThat(r.getOkRestClient()).isSameAs(
 				r2.getOkRestClient());
-		Assertions.assertThat(r.getOkHttpClient()).isSameAs(
+		assertThat(r.getOkHttpClient()).isSameAs(
 				r2.getOkHttpClient());
 
-		Assertions.assertThat(r2.getUrl().toString()).isEqualTo(
+		assertThat(r2.getUrl().toString()).isEqualTo(
 				"https://www.google.com/abc?a=1");
-		Assertions.assertThat(r.getUrl().toString()).isEqualTo(
+		assertThat(r.getUrl().toString()).isEqualTo(
 				"https://www.google.com");
 
 	}
@@ -133,7 +151,7 @@ public class OkRestClientTest {
 		Multimap<String, String> x = ArrayListMultimap.create();
 		x.put("a", "1");
 		x.put("a", "2");
-		Assertions.assertThat(x.get("a")).contains("1", "2");
+		assertThat(x.get("a")).contains("1", "2");
 	}
 
 	@Test
@@ -145,9 +163,9 @@ public class OkRestClientTest {
 				"https://www.google.com");
 
 		OkRestTarget r2 = r.header("X-foo", "bar");
-		Assertions.assertThat(r.getHeaders().get("X-foo")).isNull();
+		assertThat(r.getHeaders().get("X-foo")).isNull();
 
-		Assertions.assertThat(r2.getHeaders().get("x-Foo")).contains("bar");
+		assertThat(r2.getHeaders().get("x-Foo")).contains("bar");
 
 	}
 
@@ -160,9 +178,11 @@ public class OkRestClientTest {
 
 		Response r = c.get().execute().response();
 
+		assertThat(r).isNotNull();
+		
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getPath()).isEqualTo("/test");
-		Assertions.assertThat(rr.getHeader("X-foo")).isEqualTo("bar");
+		assertThat(rr.getPath()).isEqualTo("/test");
+		assertThat(rr.getHeader("X-foo")).isEqualTo("bar");
 
 	}
 
@@ -172,10 +192,10 @@ public class OkRestClientTest {
 
 		String s = target.path("/test").get().execute(String.class);
 
-		Assertions.assertThat(s).isEqualTo("hello");
+		assertThat(s).isEqualTo("hello");
 
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getPath()).isEqualTo("/test");
+		assertThat(rr.getPath()).isEqualTo("/test");
 
 	}
 
@@ -189,12 +209,12 @@ public class OkRestClientTest {
 
 			String s = target.path("/test").get().execute(String.class);
 
-			Assertions.assertThat(s).isEqualTo("hello");
+			assertThat(s).isEqualTo("hello");
 
 			Assert.fail();
 
 		} catch (OkRestException e) {
-			Assertions.assertThat(e).hasMessageContaining("400");
+			assertThat(e).hasMessageContaining("400");
 		}
 
 	}
@@ -206,10 +226,12 @@ public class OkRestClientTest {
 		OkRestResponse r = target.path("hello/world").get()
 				.header("foo", "bar").execute();
 
+		assertThat(r).isNotNull();
+		
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getMethod()).isEqualTo("GET");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
-		Assertions.assertThat(rr.getHeader("FOO")).isEqualTo("bar");
+		assertThat(rr.getMethod()).isEqualTo("GET");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
 
 	}
 
@@ -219,11 +241,11 @@ public class OkRestClientTest {
 
 		OkRestResponse r = target.path("hello/world").delete()
 				.header("foo", "bar").execute();
-
+		assertThat(r).isNotNull();
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getMethod()).isEqualTo("DELETE");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
-		Assertions.assertThat(rr.getHeader("FOO")).isEqualTo("bar");
+		assertThat(rr.getMethod()).isEqualTo("DELETE");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
 
 	}
 
@@ -236,40 +258,43 @@ public class OkRestClientTest {
 				.post(RequestBody.create(MediaType.parse("application/json"),
 						"{\"a\":1}")).header("foo", "bar").execute();
 
+		assertThat(r).isNotNull();
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getMethod()).isEqualTo("POST");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
-		Assertions.assertThat(rr.getHeader("FOO")).isEqualTo("bar");
+		assertThat(rr.getMethod()).isEqualTo("POST");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
 
-		Assertions.assertThat(rr.getUtf8Body()).isEqualTo("{\"a\":1}");
+		assertThat(rr.getBody().readUtf8()).isEqualTo("{\"a\":1}");
 
 	}
 
 	@Test
 	public void testDefaultContentType() throws IOException,
 			InterruptedException {
-		mockServer.enqueue(new MockResponse().setBody("{}"));
+		mockServer.enqueue(new MockResponse().setBody(""));
 		target.path("test").post(RequestBody.create(null, "hello")).execute();
 
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeader("Content-type")).isNull();
+		assertThat(rr.getHeader("Content-type")).isNull();
 	}
 
 	@Test
 	public void testPUT() throws IOException, InterruptedException {
-		OkRestResponse r;
+		
 		RecordedRequest rr;
 
 		OkRestTarget tt = target;
 		mockServer.enqueue(new MockResponse().setBody("{}"));
-		r = target.path("hello/world")
+		OkRestResponse r = target.path("hello/world")
 				.put(RequestBody.create(MediaType.parse("text/plain"), "test"))
 				.header("foo", "bar").execute();
 		rr = mockServer.takeRequest();
 
-		Assertions.assertThat(rr.getHeader("Content-type")).contains(
+		assertThat(r).isNotNull();
+		assertThat(tt).isNotNull();
+		assertThat(rr.getHeader("Content-type")).contains(
 				"text/plain");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
 
 		mockServer.enqueue(new MockResponse().setBody("{}"));
 
@@ -279,17 +304,17 @@ public class OkRestClientTest {
 						"{\"a\":1}")).header("foo", "bar").execute();
 
 		rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getMethod()).isEqualTo("PUT");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
-		Assertions.assertThat(rr.getHeader("FOO")).isEqualTo("bar");
-		Assertions.assertThat(rr.getUtf8Body()).isEqualTo("{\"a\":1}");
+		assertThat(rr.getMethod()).isEqualTo("PUT");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
+		assertThat(rr.getBody().readUtf8()).isEqualTo("{\"a\":1}");
 
 		mockServer.enqueue(new MockResponse().setBody("{}"));
 		r = target.path("hello/world")
 				.put(new ObjectMapper().createObjectNode())
 				.header("foo", "bar").execute();
 		rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeader("Content-type")).contains(
+		assertThat(rr.getHeader("Content-type")).contains(
 				"application/json");
 
 		mockServer.enqueue(new MockResponse().setBody("{}"));
@@ -297,7 +322,7 @@ public class OkRestClientTest {
 				.put(new ObjectMapper().createObjectNode())
 				.header("foo", "bar").execute();
 		rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getHeader("Content-type")).contains(
+		assertThat(rr.getHeader("Content-type")).contains(
 				"application/json");
 
 		mockServer.enqueue(new MockResponse().setBody("{}"));
@@ -306,7 +331,7 @@ public class OkRestClientTest {
 				.header("foo", "bar").execute();
 		rr = mockServer.takeRequest();
 
-		Assertions.assertThat(rr.getHeader("Content-type")).contains(
+		assertThat(rr.getHeader("Content-type")).contains(
 				"text/plain");
 	}
 
@@ -319,10 +344,11 @@ public class OkRestClientTest {
 				.head(RequestBody.create(MediaType.parse("application/json"),
 						"{\"a\":1}")).header("foo", "bar").execute();
 
+		assertThat(r).isNotNull();
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getMethod()).isEqualTo("HEAD");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
-		Assertions.assertThat(rr.getHeader("FOO")).isEqualTo("bar");
+		assertThat(rr.getMethod()).isEqualTo("HEAD");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
 
 	}
 
@@ -330,15 +356,18 @@ public class OkRestClientTest {
 	public void testPATCH() throws IOException, InterruptedException {
 		mockServer.enqueue(new MockResponse());
 
+		
+		
 		OkRestResponse r = target
 				.path("hello/world")
 				.patch(RequestBody.create(MediaType.parse("application/json"),
 						"{\"a\":1}")).header("foo", "bar").execute();
 
+		assertThat(r).isNotNull();
 		RecordedRequest rr = mockServer.takeRequest();
-		Assertions.assertThat(rr.getMethod()).isEqualTo("PATCH");
-		Assertions.assertThat(rr.getPath()).isEqualTo("/hello/world");
-		Assertions.assertThat(rr.getHeader("FOO")).isEqualTo("bar");
+		assertThat(rr.getMethod()).isEqualTo("PATCH");
+		assertThat(rr.getPath()).isEqualTo("/hello/world");
+		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
 
 	}
 
@@ -362,63 +391,66 @@ public class OkRestClientTest {
 
 		RecordedRequest rr = mockServer.takeRequest();
 
-		Assertions.assertThat(rr.getHeader("Content-Type")).contains("foo/bar"); // Really???
+		assertThat(rr.getHeader("Content-Type")).contains("foo/bar"); // Really???
 
 	}
-	
+
 	@Test
-	public void testJacksonResponse()  throws InterruptedException, IOException {
+	public void testJacksonResponse() throws InterruptedException, IOException {
 		mockServer.enqueue(new MockResponse().setBody("{\"name\":\"Rob\"}"));
 		JsonNode n = target.path("/").get().execute(JsonNode.class);
-		Assertions.assertThat(n.path("name").asText()).isEqualTo("Rob");
-		
-		
+		assertThat(n.path("name").asText()).isEqualTo("Rob");
+
 		mockServer.enqueue(new MockResponse().setBody("[{\"name\":\"Rob\"}]"));
 		n = target.path("/").get().execute(JsonNode.class);
-		Assertions.assertThat(n.get(0).path("name").asText()).isEqualTo("Rob");
-		
-		
+		assertThat(n.get(0).path("name").asText()).isEqualTo("Rob");
+
 		try {
-		mockServer.enqueue(new MockResponse().setBody("<test/>"));
-		n = target.path("/").get().execute(JsonNode.class);
-		
-		Assert.fail();
-		}
-		catch (IOException e) {
-			Assertions.assertThat(e).isExactlyInstanceOf(JsonParseException.class);
+			mockServer.enqueue(new MockResponse().setBody("<test/>"));
+			n = target.path("/").get().execute(JsonNode.class);
+
+			Assert.fail();
+		} catch (IOException e) {
+			assertThat(e).isExactlyInstanceOf(
+					JsonParseException.class);
 		}
 	}
-	
-	
-	@Test
-	public void testInputStreamResponse()  throws InterruptedException, IOException {
-		byte [] x = "hello".getBytes();
-		Buffer b = new Buffer().write(x);
 
+	@Test
+	public void testInputStreamResponse() throws InterruptedException,
+			IOException {
+		byte[] x = "hello".getBytes();
+		@SuppressWarnings("resource")
+		Buffer b = new Buffer().write(x);
 
 		mockServer.enqueue(new MockResponse().setBody(b));
 		InputStream x1 = target.path("/").get().execute(InputStream.class);
-		byte [] bx1 = ByteStreams.toByteArray(x1);
-		
-		Assertions.assertThat(bx1).isEqualTo(x);
+		byte[] bx1 = ByteStreams.toByteArray(x1);
+
+		assertThat(bx1).isEqualTo(x);
+
 	}
+
 	@Test
-	public void testCharacterStreamResponse()  throws InterruptedException, IOException {
+	public void testCharacterStreamResponse() throws InterruptedException,
+			IOException {
 		String x = "hello";
 		mockServer.enqueue(new MockResponse().setBody(x));
 		Reader x1 = target.path("/").get().execute(Reader.class);
 		String bx1 = CharStreams.toString(x1);
-		
-		Assertions.assertThat(bx1).isEqualTo(x);
+
+		assertThat(bx1).isEqualTo(x);
 	}
-	
+
+	@SuppressWarnings("resource")
 	@Test
-	public void testByteArrayResponse()  throws InterruptedException, IOException {
-		byte [] x = {0,1,2};
-		
+	public void testByteArrayResponse() throws InterruptedException,
+			IOException {
+		byte[] x = { 0, 1, 2 };
+
 		mockServer.enqueue(new MockResponse().setBody(new Buffer().write(x)));
-		byte [] x1 = target.path("/").get().execute(byte[].class);
+		byte[] x1 = target.path("/").get().execute(byte[].class);
 		Assert.assertArrayEquals(x, x1);
-		Assertions.assertThat(x1).isEqualTo(x);
+		assertThat(x1).isEqualTo(x);
 	}
 }

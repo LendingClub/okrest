@@ -14,10 +14,14 @@ public class OkRestClient {
 
 	OkHttpClient okHttpClient;
 
-	ConverterRegistry registry = ConverterRegistry.defaultRegistry();
+	ConverterRegistry registry = ConverterRegistry.newRegistry();
 
 	public OkRestClient() {
 		okHttpClient = new OkHttpClient();
+	}
+	
+	public OkRestClient(OkHttpClient c) {
+		this.okHttpClient = c;
 	}
 
 	public OkRestTarget url(String url) {

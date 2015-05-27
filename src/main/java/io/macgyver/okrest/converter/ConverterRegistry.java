@@ -1,8 +1,5 @@
 package io.macgyver.okrest.converter;
 
-import io.macgyver.okrest.OkRestException;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +9,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -51,6 +46,10 @@ public class ConverterRegistry {
 
 	public static ConverterRegistry defaultRegistry() {
 		return defaultRegistry;
+	}
+
+	public static ConverterRegistry newRegistry() {
+		return new ConverterRegistry();
 	}
 
 	public void addResponseBodyConverter(ResponseBodyConverter c) {
@@ -113,7 +112,7 @@ public class ConverterRegistry {
 				+ input);
 	}
 
-	public ResponseBodyConverter findResponseConverter(Class desiredType,
+	public ResponseBodyConverter findResponseConverter(Class<?> desiredType,
 			Optional<MediaType> mt) {
 		for (ResponseBodyConverter c : responseConverters) {
 			if (c.supports(desiredType, mt)) {
@@ -157,10 +156,11 @@ public class ConverterRegistry {
 			ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class t, Optional<MediaType> mediaType) {
+		public boolean supports(Class<?> t, Optional<MediaType> mediaType) {
 			return String.class.isAssignableFrom(t);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T> T convert(Response r, Class<? extends T> t)
 				throws IOException {
@@ -173,14 +173,16 @@ public class ConverterRegistry {
 			ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class t, Optional<MediaType> mediaType) {
+		public boolean supports(Class<? extends Object> t,
+				Optional<MediaType> mediaType) {
 			return InputStream.class.isAssignableFrom(t);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T> T convert(Response r, Class<? extends T> t)
 				throws IOException {
-			
+
 			return (T) r.body().byteStream();
 		}
 
@@ -190,10 +192,12 @@ public class ConverterRegistry {
 			ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class t, Optional<MediaType> mediaType) {
+		public boolean supports(Class<? extends Object> t,
+				Optional<MediaType> mediaType) {
 			return byte[].class.isAssignableFrom(t);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T> T convert(Response r, Class<? extends T> t)
 				throws IOException {
@@ -206,14 +210,16 @@ public class ConverterRegistry {
 			ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class t, Optional<MediaType> mediaType) {
+		public boolean supports(Class<? extends Object> t,
+				Optional<MediaType> mediaType) {
 			return Reader.class.isAssignableFrom(t);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <T> T convert(Response r, Class<? extends T> t)
 				throws IOException {
-			return (T) r.body().charStream();
+			return ((T) r.body().charStream());
 		}
 
 	}

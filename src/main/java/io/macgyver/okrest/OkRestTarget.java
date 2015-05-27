@@ -10,7 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-
 import com.google.common.base.Optional;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Headers;
@@ -29,8 +28,6 @@ public class OkRestTarget {
 
 	protected Headers headers = Headers.of();
 
-	private ConverterRegistry requestBodyConverterRegistry;
-
 	public class InvocationBuilder {
 		Request.Builder okBuilder = new Request.Builder();
 
@@ -43,24 +40,21 @@ public class OkRestTarget {
 
 			Call c = getOkHttpClient().newCall(okBuilder.build());
 
-			return new OkRestResponse(OkRestTarget.this,c.execute());
+			return new OkRestResponse(OkRestTarget.this, c.execute());
 
 		}
 
 		public <T> T execute(Class<? extends T> x) throws IOException {
 
 			OkRestResponse okr = execute();
-			
+
 			return (T) okr.getBody(x);
-			
-		
+
 		}
 
 		public Request.Builder okBuilder() {
 			return okBuilder;
 		}
-
-	
 
 		InvocationBuilder post(Object body) {
 			return post(findRequestConverter(body).convert(body));
@@ -123,24 +117,22 @@ public class OkRestTarget {
 			return new InvocationBuilder(okBuilder.removeHeader(key));
 		}
 	}
-	ResponseBodyConverter findResponseConverter(Class x, Optional<MediaType> t) {
+
+	ResponseBodyConverter findResponseConverter(Class<?> x, Optional<MediaType> t) {
 		ResponseBodyConverter converter = getOkRestClient()
-				.getConverterRegistry()
-				.findResponseConverter(x,t);
+				.getConverterRegistry().findResponseConverter(x, t);
 		return converter;
 	}
+
 	RequestBodyConverter findRequestConverter(Object bodyInput) {
 		RequestBodyConverter converter = getOkRestClient()
-				.getConverterRegistry()
-				.findRequestConverter(bodyInput);
+				.getConverterRegistry().findRequestConverter(bodyInput);
 		return converter;
 	}
 
 	protected OkRestTarget() {
 
 	}
-
-
 
 	public OkRestTarget clone() {
 		OkRestTarget r = new OkRestTarget();
@@ -232,24 +224,27 @@ public class OkRestTarget {
 	public OkRestTarget uri(URI uri) {
 		return url(uri);
 	}
+
 	public OkRestTarget uri(String uri) {
 		return url(uri);
 	}
+
 	public OkRestTarget uri(URL uri) {
 		return url(uri);
 	}
-	
+
 	public OkRestTarget url(URL url) {
 		return url(url.toExternalForm());
 	}
+
 	public OkRestTarget url(URI uri) {
 		try {
-		return url(uri.toURL());
-		}
-		catch (MalformedURLException e) {
+			return url(uri.toURL());
+		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
+
 	public OkRestTarget url(String url) {
 
 		OkRestTarget copy = clone();
@@ -257,7 +252,7 @@ public class OkRestTarget {
 		return copy;
 	}
 
-	public InvocationBuilder request() {
+	protected InvocationBuilder request() {
 
 		Request.Builder rb = new Request.Builder();
 		rb = rb.url(uriBuilder.build().toString());
@@ -285,35 +280,11 @@ public class OkRestTarget {
 		return okRestClient.okHttpClient;
 	}
 
-	private Call newCall(Request.Builder b) {
+	protected Call newCall(Request.Builder b) {
 		return getOkHttpClient().newCall(b.build());
 	}
 
-	/*
-	 * protected String toUrlWithQueryString(Multimap<String, String> extras) {
-	 * try { if (url == null) { throw new IllegalStateException("invalid url: "
-	 * + url); } StringBuilder sb = new StringBuilder(); sb.append(url);
-	 * 
-	 * if (!queryParameters.isEmpty()) { int count = 0;
-	 * 
-	 * for (Entry<String, String> x : queryParameters.entries()) { if (count ==
-	 * 0) { sb.append("?"); } else { sb.append("&"); }
-	 * sb.append(URLEncoder.encode(x.getKey(), "UTF8")); sb.append("=");
-	 * sb.append(URLEncoder.encode(x.getValue(), "UTF8"));
-	 * 
-	 * count++; }
-	 * 
-	 * if (extras != null) { for (Entry<String, String> x : extras.entries()) {
-	 * 
-	 * if (count == 0) { sb.append("?"); } else { sb.append("&"); }
-	 * sb.append(URLEncoder.encode(x.getKey(), "UTF8")); sb.append("=");
-	 * sb.append(URLEncoder.encode(x.getValue(), "UTF8"));
-	 * 
-	 * count++; } }
-	 * 
-	 * } return sb.toString(); } catch (UnsupportedEncodingException e) { throw
-	 * new IllegalArgumentException(e); } }
-	 */
+
 
 	public URI toURI() {
 		return uriBuilder.build();
