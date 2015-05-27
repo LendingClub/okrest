@@ -2,12 +2,11 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
-//apply plugin: 'application'
 apply plugin: "jacoco"
 apply plugin: "signing"
 
 group 'io.macgyver.okrest'
-version = "1.0.0"
+version = "1.0.1"
 
 configurations {
 	//all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
