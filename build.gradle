@@ -6,7 +6,7 @@ apply plugin: "jacoco"
 apply plugin: "signing"
 
 group 'io.macgyver.okrest'
-version = "1.0.2"
+version = "1.0.3"
 
 configurations {
 	//all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
