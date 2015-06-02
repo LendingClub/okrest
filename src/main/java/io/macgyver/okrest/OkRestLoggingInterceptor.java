@@ -40,7 +40,7 @@ public class OkRestLoggingInterceptor implements Interceptor {
 	}
 
 	public OkRestLoggingInterceptor() {
-		logger = LoggerFactory.getLogger(OkRestLoggingInterceptor.class);
+		logger = LoggerFactory.getLogger(OkRestLoggingInterceptorTest.class);
 	}
 
 	public OkRestLoggingInterceptor withLogger(String s) {
@@ -224,7 +224,7 @@ public class OkRestLoggingInterceptor implements Interceptor {
 	}
 
 	public static boolean isPrintable(char ch) {
-		return ch >= 32 && ch < 127;
+		return Character.isWhitespace(ch) || (ch >= 32 && ch < 127);
 	}
 
 	public long getBodySizeMaxBytes() {
