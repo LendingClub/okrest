@@ -40,7 +40,7 @@ public class OkRestLoggingInterceptor implements Interceptor {
 	}
 
 	public OkRestLoggingInterceptor() {
-		logger = LoggerFactory.getLogger(OkRestLoggingInterceptorTest.class);
+		logger = LoggerFactory.getLogger(OkRestLoggingInterceptor.class);
 	}
 
 	public OkRestLoggingInterceptor withLogger(String s) {
