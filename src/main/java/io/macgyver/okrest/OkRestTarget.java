@@ -36,15 +36,19 @@ public class OkRestTarget {
 
 		}
 
-		public OkRestResponse execute() throws IOException {
+		public OkRestResponse execute() {
 
-			Call c = getOkHttpClient().newCall(okBuilder.build());
+			try {
+				Call c = getOkHttpClient().newCall(okBuilder.build());
 
-			return new OkRestResponse(OkRestTarget.this, c.execute());
+				return new OkRestResponse(OkRestTarget.this, c.execute());
+			} catch (IOException e) {
+				throw new OkRestException(e);
+			}
 
 		}
 
-		public <T> T execute(Class<? extends T> x) throws IOException {
+		public <T> T execute(Class<? extends T> x) {
 
 			OkRestResponse okr = execute();
 
@@ -118,7 +122,8 @@ public class OkRestTarget {
 		}
 	}
 
-	ResponseBodyConverter findResponseConverter(Class<?> x, Optional<MediaType> t) {
+	ResponseBodyConverter findResponseConverter(Class<?> x,
+			Optional<MediaType> t) {
 		ResponseBodyConverter converter = getOkRestClient()
 				.getConverterRegistry().findResponseConverter(x, t);
 		return converter;
@@ -283,8 +288,6 @@ public class OkRestTarget {
 	protected Call newCall(Request.Builder b) {
 		return getOkHttpClient().newCall(b.build());
 	}
-
-
 
 	public URI toURI() {
 		return uriBuilder.build();

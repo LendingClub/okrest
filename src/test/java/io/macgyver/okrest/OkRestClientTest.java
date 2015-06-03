@@ -378,7 +378,7 @@ public class OkRestClientTest {
 	}
 
 	@Test
-	public void testPATCH() throws IOException, InterruptedException {
+	public void testPATCH() throws  InterruptedException {
 		mockServer.enqueue(new MockResponse());
 
 		OkRestResponse r = target
@@ -395,8 +395,7 @@ public class OkRestClientTest {
 	}
 
 	@Test
-	public void testConentTypeBehavior() throws InterruptedException,
-			IOException {
+	public void testConentTypeBehavior() throws InterruptedException , IOException {
 
 		// This seems like a bug
 
@@ -419,7 +418,7 @@ public class OkRestClientTest {
 	}
 
 	@Test
-	public void testJacksonResponse() throws InterruptedException, IOException {
+	public void testJacksonResponse() throws InterruptedException {
 		mockServer.enqueue(new MockResponse().setBody("{\"name\":\"Rob\"}"));
 		JsonNode n = target.path("/").get().execute(JsonNode.class);
 		assertThat(n.path("name").asText()).isEqualTo("Rob");
@@ -433,14 +432,13 @@ public class OkRestClientTest {
 			n = target.path("/").get().execute(JsonNode.class);
 
 			Assert.fail();
-		} catch (IOException e) {
-			assertThat(e).isExactlyInstanceOf(JsonParseException.class);
+		} catch (Exception e) {
+			assertThat(e).isExactlyInstanceOf(OkRestException.class);
 		}
 	}
 
 	@Test
-	public void testInputStreamResponse() throws InterruptedException,
-			IOException {
+	public void testInputStreamResponse() throws InterruptedException, IOException {
 		byte[] x = "hello".getBytes();
 		@SuppressWarnings("resource")
 		Buffer b = new Buffer().write(x);

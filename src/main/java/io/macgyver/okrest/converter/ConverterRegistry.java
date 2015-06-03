@@ -217,8 +217,8 @@ public class ConverterRegistry {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T convert(Response r, Class<? extends T> t)
-				throws IOException {
+		public <T> T convert(Response r, Class<? extends T> t) throws IOException
+			 {
 			return ((T) r.body().charStream());
 		}
 

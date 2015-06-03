@@ -21,15 +21,20 @@ public class OkRestResponse {
 		return response;
 	}
 
-	public <T> T getBody(Class<? extends T> clazz) throws IOException {
+	public <T> T getBody(Class<? extends T> clazz) throws OkRestException {
 
 		Response response = response();
 
 		if (response.isSuccessful()) {
+			try {
 			String contentType = response.header("content-type");
 			MediaType mt = contentType!=null ? MediaType.parse(response.header("Content-type")): null;
 			ResponseBodyConverter c = okRestTarget.findResponseConverter(clazz,Optional.fromNullable(mt));
 			return c.convert(response, clazz);
+			}
+			catch (IOException e) {
+				throw new OkRestException(e);
+			}
 		}
 		else {
 			throw OkRestException.fromResponse(response);
