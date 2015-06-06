@@ -1,7 +1,5 @@
 package io.macgyver.okrest;
 
-import java.io.IOException;
-
 import com.squareup.okhttp.Response;
 
 public class OkRestException extends RuntimeException {

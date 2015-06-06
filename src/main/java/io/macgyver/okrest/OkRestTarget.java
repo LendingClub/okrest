@@ -1,7 +1,6 @@
 package io.macgyver.okrest;
 
 import io.macgyver.okrest.compat.OkUriBuilder;
-import io.macgyver.okrest.converter.ConverterRegistry;
 import io.macgyver.okrest.converter.RequestBodyConverter;
 import io.macgyver.okrest.converter.ResponseBodyConverter;
 

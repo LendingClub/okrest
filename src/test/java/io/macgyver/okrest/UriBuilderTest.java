@@ -28,4 +28,9 @@ public class UriBuilderTest {
 		Assertions.assertThat(b.build().toString()).contains("https://www.google.com?a=1");
 		Assertions.assertThat(clone.build().toString()).isEqualTo("https://www.google.com");
 	}
+	
+	@Test
+	public void testPath() {
+		Assertions.assertThat(new OkUriBuilder().path("/hello").build().toString()).isEqualTo("/hello");
+	}
 }
