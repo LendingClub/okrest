@@ -151,7 +151,14 @@ public class OkRestTarget {
 		c.headers = this.headers.newBuilder().set(key, val).build();
 		return c;
 	}
-
+	public OkRestTarget accept(String val) {
+		return header("Accept",val);
+	}
+	
+	public OkRestTarget contentType(String val) {
+		return header("Content-type",val);
+	}
+	
 	public OkRestTarget addHeader(String key, String val) {
 		OkRestTarget c = clone();
 		c.headers = this.headers.newBuilder().add(key, val).build();

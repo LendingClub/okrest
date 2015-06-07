@@ -81,7 +81,18 @@ public class OkRestClientTest {
 		RecordedRequest rr = mockServer.takeRequest();
 		assertThat(rr.getHeaders().values("X-foo")).contains("bar", "baz");
 	}
+	@Test
+	public void testFirstClassHeaders() throws IOException, InterruptedException {
+		mockServer.enqueue(new MockResponse().setBody("hello"));
 
+		String s = target.path("/test").accept("foo/bar").contentType("foo/baz").get().execute(String.class);
+
+		assertThat(s).isEqualTo("hello");
+
+		RecordedRequest rr = mockServer.takeRequest();
+		assertThat(rr.getHeader("accept")).isEqualTo("foo/bar");
+		assertThat(rr.getHeader("content-type")).isEqualTo("foo/baz");
+	}
 	@Test
 	public void testAddHeaderThenHeader() throws IOException,
 			InterruptedException {
