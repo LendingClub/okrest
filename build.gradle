@@ -6,7 +6,7 @@ apply plugin: "jacoco"
 apply plugin: "signing"
 
 group 'io.macgyver.okrest'
-version = "1.1.2"
+version = "1.2.0"
 
 configurations {
 	//all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
@@ -133,4 +133,13 @@ jacocoTestReport {
 
 task (none) << {
 	// dummy task to do nothing
+}
+
+
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+      tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+      }
+    }
 }
