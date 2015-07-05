@@ -12,6 +12,7 @@ public class OkRestResponse {
 
 	Response response;
 	OkRestTarget okRestTarget;
+
 	public OkRestResponse(OkRestTarget target, Response r) {
 		okRestTarget = target;
 		this.response = r;
@@ -27,17 +28,17 @@ public class OkRestResponse {
 
 		if (response.isSuccessful()) {
 			try {
-			String contentType = response.header("content-type");
-			MediaType mt = contentType!=null ? MediaType.parse(response.header("Content-type")): null;
-			ResponseBodyConverter c = okRestTarget.findResponseConverter(clazz,Optional.fromNullable(mt));
-			return c.convert(response, clazz);
-			}
-			catch (IOException e) {
+				String contentType = response.header("content-type");
+				MediaType mt = contentType != null ? MediaType.parse(response
+						.header("Content-type")) : null;
+				ResponseBodyConverter c = okRestTarget.findResponseConverter(
+						clazz, Optional.fromNullable(mt));
+				return c.convert(response, clazz);
+			} catch (IOException e) {
 				throw new OkRestException(e);
 			}
-		}
-		else {
-			throw OkRestException.fromResponse(response);
+		} else {
+			return okRestTarget.getOkRestClient().getConverterRegistry().findErrorHandler(clazz).handleError(response, clazz);
 		}
 	}
 }
