@@ -19,6 +19,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.ByteStreams;
@@ -81,11 +82,14 @@ public class OkRestClientTest {
 		RecordedRequest rr = mockServer.takeRequest();
 		assertThat(rr.getHeaders().values("X-foo")).contains("bar", "baz");
 	}
+
 	@Test
-	public void testFirstClassHeaders() throws IOException, InterruptedException {
+	public void testFirstClassHeaders() throws IOException,
+			InterruptedException {
 		mockServer.enqueue(new MockResponse().setBody("hello"));
 
-		String s = target.path("/test").accept("foo/bar").contentType("foo/baz").get().execute(String.class);
+		String s = target.path("/test").accept("foo/bar")
+				.contentType("foo/baz").get().execute(String.class);
 
 		assertThat(s).isEqualTo("hello");
 
@@ -93,6 +97,7 @@ public class OkRestClientTest {
 		assertThat(rr.getHeader("accept")).isEqualTo("foo/bar");
 		assertThat(rr.getHeader("content-type")).isEqualTo("foo/baz");
 	}
+
 	@Test
 	public void testAddHeaderThenHeader() throws IOException,
 			InterruptedException {
@@ -272,22 +277,23 @@ public class OkRestClientTest {
 
 	@Test
 	public void testBinaryPost() throws IOException, InterruptedException {
-		byte [] testData = new byte[256];
-		for (int i=0; i<testData.length; i++) {
-			testData[i]=(byte)i;
+		byte[] testData = new byte[256];
+		for (int i = 0; i < testData.length; i++) {
+			testData[i] = (byte) i;
 		}
-		
-		mockServer.enqueue(new MockResponse().setBody(new Buffer().write(testData)).addHeader("content-type","application/octet-bar"));
 
-		
+		mockServer.enqueue(new MockResponse().setBody(
+				new Buffer().write(testData)).addHeader("content-type",
+				"application/octet-bar"));
+
 		Buffer requestBuffer = new Buffer();
 		requestBuffer.write(testData);
-	
-		
+
 		OkRestResponse r = target
 				.path("hello/world")
-				.post(RequestBody.create(MediaType.parse("application/octet-foo"),
-						testData)).header("foo", "bar").execute();
+				.post(RequestBody.create(
+						MediaType.parse("application/octet-foo"), testData))
+				.header("foo", "bar").execute();
 
 		assertThat(r).isNotNull();
 		RecordedRequest rr = mockServer.takeRequest();
@@ -295,16 +301,16 @@ public class OkRestClientTest {
 		assertThat(rr.getPath()).isEqualTo("/hello/world");
 		assertThat(rr.getHeader("FOO")).isEqualTo("bar");
 		assertThat(rr.getHeader("Content-type")).contains("octet-foo");
-		
-		assertThat(r.response().header("Content-type")).contains("application/octet-bar");
+
+		assertThat(r.response().header("Content-type")).contains(
+				"application/octet-bar");
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		rr.getBody().copyTo(baos);
 
-		byte [] resultData = baos.toByteArray();
-		
+		byte[] resultData = baos.toByteArray();
+
 		Assertions.assertThat(resultData).containsSequence(testData);
-		
-	
+
 	}
 
 	@Test
@@ -388,7 +394,7 @@ public class OkRestClientTest {
 	}
 
 	@Test
-	public void testPATCH() throws  InterruptedException {
+	public void testPATCH() throws InterruptedException {
 		mockServer.enqueue(new MockResponse());
 
 		OkRestResponse r = target
@@ -405,7 +411,8 @@ public class OkRestClientTest {
 	}
 
 	@Test
-	public void testConentTypeBehavior() throws InterruptedException , IOException {
+	public void testConentTypeBehavior() throws InterruptedException,
+			IOException {
 
 		// This seems like a bug
 
@@ -448,7 +455,8 @@ public class OkRestClientTest {
 	}
 
 	@Test
-	public void testInputStreamResponse() throws InterruptedException, IOException {
+	public void testInputStreamResponse() throws InterruptedException,
+			IOException {
 		byte[] x = "hello".getBytes();
 		@SuppressWarnings("resource")
 		Buffer b = new Buffer().write(x);
@@ -477,13 +485,32 @@ public class OkRestClientTest {
 	public void testByteArrayResponse() throws InterruptedException,
 			IOException {
 		byte[] x = new byte[256];
-		for (int i=0; i<x.length; i++) {
-			x[i]=(byte) i;
+		for (int i = 0; i < x.length; i++) {
+			x[i] = (byte) i;
 		}
 
 		mockServer.enqueue(new MockResponse().setBody(new Buffer().write(x)));
 		byte[] x1 = target.path("/").get().execute(byte[].class);
 		Assert.assertArrayEquals(x, x1);
 		assertThat(x1).isEqualTo(x);
+	}
+
+	@Test
+	public void testExceptionBody() throws IOException, InterruptedException {
+
+		String responseBody = "{\"message\":\"all screwed up\"}";
+		mockServer.enqueue(new MockResponse().setBody(responseBody
+				).setResponseCode(500));
+
+		try {
+			ObjectNode s = target.path("/test").header("X-foo", "bar")
+					.addHeader("X-foo", "baz").header("X-foo", "oof").get()
+					.execute(ObjectNode.class);
+			Assert.fail();
+		} catch (OkRestException e) {
+			Assertions.assertThat(e.getStatusCode()).isEqualTo(500);
+			Assertions.assertThat(e.getErrorResponseBody()).isEqualTo(responseBody);
+		}
+
 	}
 }

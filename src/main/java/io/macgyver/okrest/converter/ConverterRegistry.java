@@ -25,6 +25,8 @@ public class ConverterRegistry {
 			.newCopyOnWriteArrayList();
 	private static ConverterRegistry defaultRegistry = new ConverterRegistry();
 
+	private ResponseErrorHandler defaultResponseErrorHandler = new DefaultResponseErrorHandler();
+
 	public ConverterRegistry() {
 
 		requestConverters.add(new PassThroughRequestBodyConverter());
@@ -257,4 +259,17 @@ public class ConverterRegistry {
 
 	}
 
+	public ResponseErrorHandler getDefaultResponseErrorHandler() {
+		return defaultResponseErrorHandler;
+	}
+
+	public void setDefaultResponseErrorHandler(ResponseErrorHandler h) {
+		Preconditions.checkNotNull(h);
+		this.defaultResponseErrorHandler = h;
+	}
+
+	public ResponseErrorHandler findErrorHandler(Class<? extends Object> clazz) {
+		// Eventually we may want to allow for custom error handlers to be registered
+		return defaultResponseErrorHandler;
+	}
 }
