@@ -67,10 +67,10 @@ uploadArchives {
 			
             name = 'macgyver-bintray'
             if (!project.hasProperty('bintrayUser')) {
-                project.ext['bintrayUser']=System.getnev("bintrayUser")!=null ? System.getenv("bintrayUser") : ""
+                project.ext['bintrayUser']=System.getenv("bintrayUser")!=null ? System.getenv("bintrayUser") : ""
             }
             if (!project.hasProperty('bintrayKey')) {
-                project.ext['bintrayKey'] = System.getnev("bintrayKey")!=null ? System.getenv("bintrayKey") : ""
+                project.ext['bintrayKey'] = System.getenv("bintrayKey")!=null ? System.getenv("bintrayKey") : ""
             }
 			
 			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
