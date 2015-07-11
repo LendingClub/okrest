@@ -1,6 +1,8 @@
 OkRest
 ======
 
+[![Circle CI](https://circleci.com/gh/if6was9/okrest.svg?style=svg)](https://circleci.com/gh/if6was9/okrest)
+
 OkRest is a fluent REST client that is built on Square's excellent [OkHttp](https://square.github.io/okhttp/) client.
 
 OkRest's API is similar in construction JAX-RS, but without all of the JAX-RS baggage.
