@@ -6,7 +6,7 @@ apply plugin: "jacoco"
 apply plugin: "signing"
 
 group 'io.macgyver.okrest'
-version = "1.2.0"
+version = "1.2.1"
 
 configurations {
 	//all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
@@ -43,7 +43,7 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.4'
+    gradleVersion = '2.5'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -67,10 +67,10 @@ uploadArchives {
 			
             name = 'macgyver-bintray'
             if (!project.hasProperty('bintrayUser')) {
-                project.ext['bintrayUser']=""
+                project.ext['bintrayUser']=System.getnev("bintrayUser")!=null ? System.getenv("bintrayUser") : ""
             }
             if (!project.hasProperty('bintrayKey')) {
-                project.ext['bintrayKey']=""
+                project.ext['bintrayKey'] = System.getnev("bintrayKey")!=null ? System.getenv("bintrayKey") : ""
             }
 			
 			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -82,7 +82,7 @@ uploadArchives {
 				
 				name 'okrest'
 				description 'REST Client for Neo4j'
-				url 'https://github.com/if6was9/okhttp'
+				url 'https://github.com/if6was9/okrest'
                 licenses {
                     license {
                         name 'The Apache Software License, Version 2.0'
@@ -91,9 +91,9 @@ uploadArchives {
                     }
                 }
 				scm {
-					connection 'scm:git:git@github.com:if6was9/okhttp.git'
-					developerConnection 'scm:git:git@github.com:if6was9/okhttp.git'
-					url 'git@github.com:if6was9/okhttp.git'
+					connection 'scm:git:git@github.com:if6was9/okrest.git'
+					developerConnection 'scm:git:git@github.com:if6was9/okrest.git'
+					url 'git@github.com:if6was9/okrest.git'
 				}
             	developers {
 					developer {
