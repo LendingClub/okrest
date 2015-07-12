@@ -13,15 +13,13 @@ configurations {
 	//all*.exclude group: 'org.codehaus.groovy', module: 'groovy'
 	all*.exclude group: 'log4j'
 	all*.exclude group: 'xml-apis'
-    all*.exclude group: 'commons-logging'
+	all*.exclude group: 'commons-logging'
 }
 
 repositories {
-   mavenLocal()
-   mavenCentral()
-   jcenter()
-   
-
+	mavenLocal()
+	mavenCentral()
+	jcenter()
 }
 
 sourceCompatibility = 1.7
@@ -33,7 +31,7 @@ dependencies {
 	compile "com.fasterxml.jackson.core:jackson-databind:${JACKSON_VERSION}"
 	compile "com.squareup.okhttp:okhttp:${OKHTTP_VERSION}"
 	compile "org.slf4j:slf4j-api:${SLF4J_VERSION}"
-    compile 'com.google.guava:guava:18.0'
+	compile 'com.google.guava:guava:18.0'
 	
 	testCompile 'org.assertj:assertj-core:1.7.0'   
 	testCompile "junit:junit:${JUNIT_VERSION}"
@@ -44,12 +42,12 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.5'
+	gradleVersion = '2.5'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+	classifier = 'sources'
+	from sourceSets.main.allSource
 }
 	
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -119,14 +117,11 @@ signArchives.onlyIf {
 	project.ext['signing.password'] = System.getenv("SIGNING_PASSWORD")
 	project.ext['signing.secretKeyRingFile'] = new File("./.gnupg/secring.gpg")
 	
-	
-	println project.ext['signing.keyId']
 	def signingPropertiesSet = project.ext.has('signing.keyId') 
 	if (!signingPropertiesSet) {
 		println "properties required to sign artifacts not set -- disabling code signing"
 	}
 	else {
-		println "fetching"
 		new File("./.gnupg").mkdirs()
 		ant.get(src: "https://robschoening.s3.amazonaws.com/macgyver/secring.gpg", dest: "./.gnupg/secring.gpg", verbose:true)
 	}
