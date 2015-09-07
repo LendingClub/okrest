@@ -50,7 +50,7 @@ public class OkRestClientTest {
 	@Before
 	public void setup() {
 
-		target = new OkRestClient().uri(mockServer.getUrl("/"));
+		target = new OkRestClient().uri(mockServer.url("/").toString());
 		target.getOkHttpClient().interceptors()
 				.add(new OkRestLoggingInterceptor());
 
@@ -419,7 +419,7 @@ public class OkRestClientTest {
 
 		OkHttpClient c = new OkHttpClient();
 
-		Request r = new Request.Builder().url(mockServer.getUrl("/"))
+		Request r = new Request.Builder().url(mockServer.url("/").toString())
 				.header("Content-type", "text/xml")
 				.post(RequestBody.create(MediaType.parse("foo/bar"), ""))
 				.removeHeader("Content-type")

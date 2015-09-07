@@ -11,7 +11,7 @@ OkRest's API is similar in construction JAX-RS, but without all of the JAX-RS ba
 Examples
 --------
 
-Assuming that a ficticious service with a GET request for ```/api/users/123``` returns:
+Assuming that a fictitious service with a GET request for ```/api/users/123``` returns:
 ```json
 {
   "id" : 123,
