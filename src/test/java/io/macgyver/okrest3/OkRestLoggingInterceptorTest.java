@@ -1,7 +1,9 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import io.macgyver.okrest3.OkRestLoggingInterceptor;
 
 public class OkRestLoggingInterceptorTest {
 

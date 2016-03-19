@@ -1,10 +1,10 @@
-package io.macgyver.okrest.converter;
+package io.macgyver.okrest3.converter;
 
 import java.io.IOException;
 
 import com.google.common.base.Optional;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Response;
+import okhttp3.MediaType;
+import okhttp3.Response;
 
 public abstract class ResponseBodyConverter {
 

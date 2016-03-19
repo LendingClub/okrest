@@ -1,9 +1,12 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 import java.io.IOException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import io.macgyver.okrest3.OkRestException;
+import io.macgyver.okrest3.OkRestWrapperException;
 
 public class OkRestExceptionTest {
 

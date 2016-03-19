@@ -1,10 +1,10 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 import java.io.IOException;
 
-import com.squareup.okhttp.Credentials;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Response;
+import okhttp3.Credentials;
+import okhttp3.Interceptor;
+import okhttp3.Response;
 
 public class BasicAuthInterceptor implements Interceptor {
 

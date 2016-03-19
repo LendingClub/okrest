@@ -1,9 +1,9 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import com.squareup.okhttp.Headers;
+import okhttp3.Headers;
 
 public class HeadersTest {
 

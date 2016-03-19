@@ -5,8 +5,8 @@ apply plugin: 'maven'
 apply plugin: "jacoco"
 apply plugin: "signing"
 
-group 'io.macgyver.okrest'
-version = "1.4.0"
+group 'io.macgyver.okrest3'
+version = "3.0.0"
 
 
 configurations {
@@ -22,27 +22,27 @@ repositories {
 	jcenter()
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 dependencies {
 
 
 	compile "com.fasterxml.jackson.core:jackson-databind:${JACKSON_VERSION}"
-	compile "com.squareup.okhttp:okhttp:${OKHTTP_VERSION}"
+	compile "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
 	compile "org.slf4j:slf4j-api:${SLF4J_VERSION}"
-	compile 'com.google.guava:guava:18.0'
+	compile "com.google.guava:guava:${GUAVA_VERSION}"
 	
-	testCompile 'org.assertj:assertj-core:2.2.0'   
+	testCompile "org.assertj:assertj-core:${ASSERTJ_VERSION}"  
 	testCompile "junit:junit:${JUNIT_VERSION}"
-	testCompile "com.squareup.okhttp:mockwebserver:${OKHTTP_VERSION}"
+	testCompile "com.squareup.okhttp3:mockwebserver:${OKHTTP_VERSION}"
 	testCompile "ch.qos.logback:logback-classic:${LOGBACK_VERSION}"
 	testCompile "org.slf4j:jul-to-slf4j:${SLF4J_VERSION}"
 
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.10'
+	gradleVersion = '2.11'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -83,7 +83,7 @@ uploadArchives {
 				
 				name 'okrest'
 				description 'REST Client for Neo4j'
-				url 'https://github.com/if6was9/okrest'
+				url 'https://github.com/LendingClub/okrest'
                 licenses {
                     license {
                         name 'The Apache Software License, Version 2.0'
@@ -92,8 +92,8 @@ uploadArchives {
                     }
                 }
 				scm {
-					connection 'scm:git:git@github.com:if6was9/okrest.git'
-					developerConnection 'scm:git:git@github.com:if6was9/okrest.git'
+					connection 'scm:git:git@github.com:LendingClub/okrest.git'
+					developerConnection 'scm:git:git@github.com:LendingClub/okrest.git'
 					url 'git@github.com:if6was9/okrest.git'
 				}
             	developers {

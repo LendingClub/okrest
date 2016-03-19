@@ -1,9 +1,9 @@
-package io.macgyver.okrest;
-
-import io.macgyver.okrest.compat.OkUriBuilder;
+package io.macgyver.okrest3;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import io.macgyver.okrest3.compat.OkUriBuilder;
 
 public class UriBuilderTest {
 

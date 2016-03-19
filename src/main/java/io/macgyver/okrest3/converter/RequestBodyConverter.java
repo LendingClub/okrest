@@ -1,5 +1,5 @@
-package io.macgyver.okrest.converter;
-import com.squareup.okhttp.RequestBody;
+package io.macgyver.okrest3.converter;
+import okhttp3.RequestBody;
 
 public abstract class RequestBodyConverter {
 

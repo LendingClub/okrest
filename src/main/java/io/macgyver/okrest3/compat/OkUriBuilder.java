@@ -1,4 +1,4 @@
-package io.macgyver.okrest.compat;
+package io.macgyver.okrest3.compat;
 
 
 

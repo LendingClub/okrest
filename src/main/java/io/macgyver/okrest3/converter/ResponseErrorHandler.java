@@ -1,8 +1,8 @@
-package io.macgyver.okrest.converter;
+package io.macgyver.okrest3.converter;
 
-import io.macgyver.okrest.OkRestException;
+import okhttp3.Response;
 
-import com.squareup.okhttp.Response;
+import io.macgyver.okrest3.OkRestException;
 
 public abstract class ResponseErrorHandler {
 
