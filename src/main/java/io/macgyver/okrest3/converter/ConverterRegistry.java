@@ -1,4 +1,4 @@
-package io.macgyver.okrest.converter;
+package io.macgyver.okrest3.converter;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +12,15 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ConverterRegistry {
 
+	boolean immutable=false;
+	
 	Logger logger = LoggerFactory.getLogger(ConverterRegistry.class);
 	List<RequestBodyConverter> requestConverters = Lists
 			.newCopyOnWriteArrayList();
@@ -31,15 +34,15 @@ public class ConverterRegistry {
 
 		requestConverters.add(new PassThroughRequestBodyConverter());
 		addRequestBodyConverter(
-				"io.macgyver.okrest.converter.jackson.JacksonRequestBodyConverter",
-				false); // do not fail
+				"io.macgyver.okrest3.converter.jackson.JacksonRequestBodyConverter",
+				false); // do not fail if jackson is not available at runtime
 		requestConverters.add(new StringRequestBodyConverter());
 		requestConverters.add(new FileRequestBodyConverter());
 		requestConverters.add(new ByteArrayRequestBodyConverter());
 
 		addResponseBodyConverter(
-				"io.macgyver.okrest.converter.jackson.JacksonResponseBodyConverter",
-				false);
+				"io.macgyver.okrest3.converter.jackson.JacksonResponseBodyConverter",
+				false);  // do not fail if jackson is not available at runtime
 		responseConverters.add(new StringResponseBodyConverter());
 		responseConverters.add(new ByteArrayResponseBodyConverter());
 		responseConverters.add(new InputStreamResponseBodyConverter());
@@ -54,17 +57,26 @@ public class ConverterRegistry {
 		return new ConverterRegistry();
 	}
 
+	public void markImmutable() {
+		immutable=true;
+	}
+	public void assertNotImmutable() {
+		Preconditions.checkState(immutable==false,"ConverterRegistry is immutable after construction");
+	}
 	public void addResponseBodyConverter(ResponseBodyConverter c) {
+		assertNotImmutable();
 		Preconditions.checkNotNull(c);
 		responseConverters.add(c);
 	}
 
 	public void addRequestBodyConverter(RequestBodyConverter c) {
+		assertNotImmutable();
 		Preconditions.checkNotNull(c);
 		requestConverters.add(c);
 	}
 
 	public void addRequestBodyConverter(String s, boolean failOnError) {
+		assertNotImmutable();
 		try {
 			RequestBodyConverter c = (RequestBodyConverter) Class.forName(s)
 					.newInstance();
@@ -85,6 +97,7 @@ public class ConverterRegistry {
 	}
 
 	public void addResponseBodyConverter(String s, boolean failOnError) {
+		assertNotImmutable();
 		try {
 			ResponseBodyConverter c = (ResponseBodyConverter) Class.forName(s)
 					.newInstance();
@@ -105,13 +118,15 @@ public class ConverterRegistry {
 	}
 
 	public RequestBodyConverter findRequestConverter(Object input) {
+		
+		
 		for (RequestBodyConverter c : requestConverters) {
 			if (c.supports(input)) {
 				return c;
 			}
 		}
 		throw new IllegalArgumentException("could not find type converter for "
-				+ input);
+				+ input.getClass());
 	}
 
 	public ResponseBodyConverter findResponseConverter(Class<?> desiredType,

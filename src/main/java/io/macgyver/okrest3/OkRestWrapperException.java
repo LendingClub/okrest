@@ -1,4 +1,4 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 public class OkRestWrapperException extends OkRestException {
 

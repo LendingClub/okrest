@@ -1,4 +1,4 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,14 +23,20 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
-import com.squareup.okhttp.mockwebserver.RecordedRequest;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+
+import io.macgyver.okrest3.OkRestClient;
+import io.macgyver.okrest3.OkRestException;
+import io.macgyver.okrest3.OkRestLoggingInterceptor;
+import io.macgyver.okrest3.OkRestResponse;
+import io.macgyver.okrest3.OkRestTarget;
 
 public class OkRestClientTest {
 
@@ -50,19 +56,18 @@ public class OkRestClientTest {
 	@Before
 	public void setup() {
 
-		target = new OkRestClient().uri(mockServer.url("/").toString());
-		target.getOkHttpClient().interceptors()
-				.add(new OkRestLoggingInterceptor());
+		target = new OkRestClient.Builder().withOkHttpClientBuilder(it -> it.interceptors().add(new OkRestLoggingInterceptor())).build().uri(mockServer.url("/").toString());
+	
 
 	}
 
 	@Test
 	public void testInstances() {
-		OkRestClient c = new OkRestClient();
+		OkRestClient c =  new OkRestClient.Builder().build();
 		assertThat(c.getOkHttpClient()).isNotNull().isSameAs(
 				c.getOkHttpClient());
 
-		OkRestClient c2 = new OkRestClient();
+		OkRestClient c2 = new OkRestClient.Builder().build();
 		assertThat(c2.getOkHttpClient()).isNotSameAs(c.getOkHttpClient());
 
 		assertThat(c.getConverterRegistry()).isNotSameAs(
@@ -114,7 +119,7 @@ public class OkRestClientTest {
 
 	@Test
 	public void testCreate() {
-		OkRestClient c = new OkRestClient();
+		OkRestClient c =  new OkRestClient.Builder().build();
 		OkRestTarget r = c.uri("https://www.google.com");
 
 		assertThat(r.getOkUriBuilder().build().toString()).isEqualTo(
@@ -134,7 +139,7 @@ public class OkRestClientTest {
 
 	@Test
 	public void testQueryParam() {
-		OkRestClient c = new OkRestClient();
+		OkRestClient c =  new OkRestClient.Builder().build();
 		OkRestTarget r = c.uri("https://www.google.com");
 
 		assertThat(r.getOkUriBuilder().build().toString()).isEqualTo(
@@ -162,7 +167,7 @@ public class OkRestClientTest {
 
 	@Test
 	public void testHeaders() {
-		OkRestClient c = new OkRestClient();
+		OkRestClient c =  new OkRestClient.Builder().build();
 		OkRestTarget r = c.uri("https://www.google.com");
 
 		assertThat(r.getOkUriBuilder().build().toString()).isEqualTo(
@@ -179,8 +184,8 @@ public class OkRestClientTest {
 	public void testIt2() throws IOException, InterruptedException {
 		mockServer.enqueue(new MockResponse().setBody("{}"));
 
-		OkRestTarget c = new OkRestClient().uri(
-				mockServer.getUrl("/test").toString()).header("x-foo", "bar");
+		OkRestTarget c =  new OkRestClient.Builder().build().uri(
+				mockServer.url("/test").toString()).header("x-foo", "bar");
 
 		Response r = c.get().execute().response();
 

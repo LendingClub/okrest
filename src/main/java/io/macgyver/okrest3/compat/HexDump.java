@@ -1,4 +1,4 @@
-package io.macgyver.okrest.compat;
+package io.macgyver.okrest3.compat;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with

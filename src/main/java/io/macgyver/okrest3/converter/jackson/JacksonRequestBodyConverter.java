@@ -1,11 +1,11 @@
-package io.macgyver.okrest.converter.jackson;
-
-import io.macgyver.okrest.converter.RequestBodyConverter;
+package io.macgyver.okrest3.converter.jackson;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+import io.macgyver.okrest3.converter.RequestBodyConverter;
 
 public  class JacksonRequestBodyConverter extends RequestBodyConverter {
 

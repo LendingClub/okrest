@@ -1,6 +1,4 @@
-package io.macgyver.okrest;
-
-import io.macgyver.okrest.compat.HexDump;
+package io.macgyver.okrest3;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,11 +9,13 @@ import okio.Buffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
+import io.macgyver.okrest3.compat.HexDump;
 
 public class OkRestLoggingInterceptor implements Interceptor {
 

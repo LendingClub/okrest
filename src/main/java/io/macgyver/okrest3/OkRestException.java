@@ -1,4 +1,4 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -6,8 +6,8 @@ import java.io.PrintWriter;
 
 import com.google.common.base.Optional;
 import com.google.common.io.CharStreams;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class OkRestException extends RuntimeException {
 

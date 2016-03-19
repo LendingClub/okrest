@@ -1,15 +1,15 @@
-package io.macgyver.okrest.converter;
+package io.macgyver.okrest3.converter;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.macgyver.okrest.OkRestException;
-
 import com.google.common.base.Optional;
 import com.google.common.io.CharStreams;
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
+
+import io.macgyver.okrest3.OkRestException;
 
 public class DefaultResponseErrorHandler extends ResponseErrorHandler {
 

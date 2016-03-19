@@ -1,8 +1,8 @@
-package io.macgyver.okrest;
+package io.macgyver.okrest3;
 
-import io.macgyver.okrest.compat.OkUriBuilder;
-import io.macgyver.okrest.converter.RequestBodyConverter;
-import io.macgyver.okrest.converter.ResponseBodyConverter;
+import io.macgyver.okrest3.compat.OkUriBuilder;
+import io.macgyver.okrest3.converter.RequestBodyConverter;
+import io.macgyver.okrest3.converter.ResponseBodyConverter;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -10,12 +10,14 @@ import java.net.URI;
 import java.net.URL;
 
 import com.google.common.base.Optional;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
+import com.google.common.base.Preconditions;
+
+import okhttp3.Call;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class OkRestTarget {
 
@@ -288,6 +290,7 @@ public class OkRestTarget {
 	}
 
 	public OkHttpClient getOkHttpClient() {
+		Preconditions.checkState(okRestClient!=null,"OkRestClient not set");
 		return okRestClient.okHttpClient;
 	}
 

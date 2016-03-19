@@ -1,6 +1,4 @@
-package io.macgyver.okrest.converter.jackson;
-
-import io.macgyver.okrest.converter.ResponseBodyConverter;
+package io.macgyver.okrest3.converter.jackson;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,8 +6,10 @@ import java.io.InputStream;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Response;
+import okhttp3.MediaType;
+import okhttp3.Response;
+
+import io.macgyver.okrest3.converter.ResponseBodyConverter;
 
 public class JacksonResponseBodyConverter extends ResponseBodyConverter {
 
