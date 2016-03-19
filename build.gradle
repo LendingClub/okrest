@@ -5,8 +5,8 @@ apply plugin: 'maven'
 apply plugin: "jacoco"
 apply plugin: "signing"
 
-group 'io.macgyver.okrest3'
-version = "3.0.0"
+group 'io.macgyver.okrest'
+version = "3.0.1"
 
 
 configurations {
