@@ -6,7 +6,7 @@ apply plugin: "jacoco"
 apply plugin: "signing"
 
 group 'io.macgyver.okrest3'
-version = "3.0.1"
+version = "3.0.1a"
 
 
 configurations {
@@ -119,7 +119,7 @@ signArchives.onlyIf {
 	project.ext['signing.secretKeyRingFile'] = new File("./.gnupg/secring.gpg")
 	
 	def signingPropertiesSet = project.ext.has('signing.keyId') && keyringUrl
-	if (!signingPropertiesSet ) {
+	if ((!signingPropertiesSet) && false ) {
 		println "properties required to sign artifacts not set -- disabling code signing"
 	}
 	else {
