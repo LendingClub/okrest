@@ -39,6 +39,35 @@ String name = new OkRestClient.Builder().build()
     .path("name").asText();
 ```
 
+Configuration
+-------------
+
+OkRest will create an OkHttpClient instance to be used internally:
+
+```java
+OkRestClient client = new OkRestClient.Builder().build();
+```
+
+To configure the OkHttpClient instance during configuration, there is a handy method ```withOkHttpClientConfig``` that accepts a lambda
+which will be executed during construction of the OkHttpClient.  Beautiful!
+
+```java
+OkRestClient client = new OkRestClient.Builder().withOkHttpClientConfig(cfg -> cfg.addInterceptor(myInterceptor)).build();
+```
+
+If you already have an OkHttpClient that you'd like to use, you can tell OkRest to use that:
+
+```java
+OkRestClient client = new OkRestClient.Builder().withOkHttpClient(okHttpClient).build();
+```
+
+Similarly, if you already have an OkHttpClient.Builder instance, you can pass that in.  This would be needed if you have an immutable OkHttpClient instance and need to copy/modify the config:
+
+```java
+OkRestClient client = new OkRestClient.Builder().withOkHttpClientBuilder(okHttpClient).build();
+```
+
+Remember: OkHttpClient and OkRestClient instances should be shared where possible. 
 
 Change Log
 -----------

@@ -56,7 +56,7 @@ public class OkRestClientTest {
 	@Before
 	public void setup() {
 
-		target = new OkRestClient.Builder().withOkHttpClientBuilder(it -> it.interceptors().add(new OkRestLoggingInterceptor())).build().uri(mockServer.url("/").toString());
+		target = new OkRestClient.Builder().withOkHttpClientConfig(it -> it.interceptors().add(new OkRestLoggingInterceptor())).build().uri(mockServer.url("/").toString());
 	
 
 	}

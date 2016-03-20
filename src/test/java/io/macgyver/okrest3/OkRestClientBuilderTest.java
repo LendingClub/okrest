@@ -9,12 +9,12 @@ public class OkRestClientBuilderTest {
 	@Test
 	public void testBuilder() {
 		
-		new OkRestClient.Builder().withBuilder(b -> {
+		new OkRestClient.Builder().withOkHttpClientConfig(b -> {
 			Assertions.assertThat(b).isNotNull();
 			
 		});
 		
-		new OkRestClient.Builder().withOkHttpClientBuilder(b -> {
+		new OkRestClient.Builder().withOkHttpClientConfig(b -> {
 			Assertions.assertThat(b).isNotNull();
 		});
 	}

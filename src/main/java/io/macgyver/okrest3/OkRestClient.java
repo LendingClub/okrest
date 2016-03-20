@@ -2,39 +2,45 @@ package io.macgyver.okrest3;
 
 import io.macgyver.okrest3.compat.OkUriBuilder;
 import io.macgyver.okrest3.converter.ConverterRegistry;
+import io.macgyver.okrest3.converter.ConverterRegistryConfigurer;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import com.google.common.base.Preconditions;
 
 import okhttp3.Headers;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
 public class OkRestClient {
 
+	
+	
 	OkHttpClient okHttpClient;
 
 	ConverterRegistry registry = null;
 
-	OkRestClient(Builder x) {
-	
-	}
-	
+	OkRestClient() {
 
+	}
 
 	public OkRestTarget url(String url) {
 		return uri(url);
 	}
+
 	public OkRestTarget url(URI url) {
 		return uri(url);
 	}
+
 	public OkRestTarget url(URL url) {
 		return uri(url);
 	}
+
 	public OkRestTarget uri(URL url) {
 		return uri(url.toExternalForm());
 	}
@@ -49,7 +55,6 @@ public class OkRestClient {
 
 	public OkRestTarget uri(String uri) {
 
-		
 		OkRestTarget r = new OkRestTarget();
 		r.okRestClient = this;
 		r.uriBuilder = new OkUriBuilder().uri(uri);
@@ -59,52 +64,84 @@ public class OkRestClient {
 	}
 
 	public OkHttpClient getOkHttpClient() {
+		Preconditions.checkState(okHttpClient!=null,"okHttpClient not set");
 		return okHttpClient;
 	}
 
 	public ConverterRegistry getConverterRegistry() {
-		Preconditions.checkState(registry!=null);
+		Preconditions.checkState(registry != null, "ConverterRegistry not set");
 		return registry;
 	}
-	
+
 	public static class Builder {
-		OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();		
+		boolean buildCalled = false;
+		OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
 		ConverterRegistry converterRegistry = new ConverterRegistry();
-		
-		OkHttpClient directlySpecifiedClient=null;
+
+		OkHttpClient directlySpecifiedClient = null;
+
 		public Builder withOkHttpClient(OkHttpClient client) {
-			directlySpecifiedClient=client;
+			directlySpecifiedClient = client;
 			return this;
 		}
-		public Builder withOkHttpClientBuilder(Consumer<OkHttpClient.Builder> okHttpBuilderConsumer) {
-			Preconditions.checkState(directlySpecifiedClient==null,"withOkHttpClientBuilder() is mutually exclusive with withOkHttpClient()");
-			okHttpBuilderConsumer.accept(okHttpBuilder);
+
+		public Builder withOkHttpClientConfig(OkHttpClientConfigurer cfg) {
+			cfg.accept(okHttpClientBuilder);
 			return this;
 		}
-		public Builder withBuilder(Consumer<OkRestClient.Builder> okRestBuilderConsumer) {
+
+		public Builder withInterceptor(Interceptor interceptor) {
+			withOkHttpClientConfig(it ->  it.addInterceptor(interceptor));
+			return this;
+		}
+		
+		public Builder withOkRestClientConfig(OkRestClientConfigurer okRestBuilderConsumer) {
 			okRestBuilderConsumer.accept(this);
 			return this;
 		}
-		public Builder withConverterRegistry(Consumer<ConverterRegistry> converterRegistryConsumer) {
+
+		public Builder withOkHttpClientBuilder(OkHttpClient.Builder builder) {
+			this.okHttpClientBuilder = builder;
+			this.directlySpecifiedClient = null;
+			return this;
+		}
+		public Builder withBasicAuth(String username, String password) {
+			okHttpClientBuilder.addInterceptor(new BasicAuthInterceptor(username, password));
+			return this;
+		}
+		public Builder withConverterRegistryConfig(ConverterRegistryConfigurer converterRegistryConsumer) {
 			converterRegistryConsumer.accept(converterRegistry);
 			return this;
 		}
+
 		public OkRestClient build() {
-			OkHttpClient c = okHttpBuilder.build();
 			
-			OkRestClient restClient = new OkRestClient(this);
-			restClient.okHttpClient =c;
+			Preconditions.checkState(buildCalled==false,"OkRestClient.Builder.build() may only be called once");
+			buildCalled=true;
+			OkHttpClient c =null;
+			if (directlySpecifiedClient!=null) {
+				// use the pre-configured OkHttpClient since it was specified
+				c = directlySpecifiedClient;
+			}
+			else {
+				// build the OkHttpClient
+				c = okHttpClientBuilder.build();
+			}
+			
+			OkRestClient restClient = new OkRestClient();
+			restClient.okHttpClient = c;
 			restClient.registry = converterRegistry;
 			restClient.getConverterRegistry().markImmutable();
-			
-			okHttpBuilder=null;
+
+			okHttpClientBuilder = null;
 			converterRegistry = null;
+			directlySpecifiedClient=null;
 			
-			Preconditions.checkState(restClient.okHttpClient!=null);
-			Preconditions.checkState(restClient.registry!=null);
-			
+			Preconditions.checkState(restClient.okHttpClient != null);
+			Preconditions.checkState(restClient.registry != null);
+
 			return restClient;
-			
+
 		}
 	}
 }
