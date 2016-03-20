@@ -19,8 +19,6 @@ import okhttp3.OkHttpClient;
 
 public class OkRestClient {
 
-	
-	
 	OkHttpClient okHttpClient;
 
 	ConverterRegistry registry = null;
@@ -64,7 +62,7 @@ public class OkRestClient {
 	}
 
 	public OkHttpClient getOkHttpClient() {
-		Preconditions.checkState(okHttpClient!=null,"okHttpClient not set");
+		Preconditions.checkState(okHttpClient != null, "okHttpClient not set");
 		return okHttpClient;
 	}
 
@@ -90,11 +88,20 @@ public class OkRestClient {
 			return this;
 		}
 
+		
 		public Builder withInterceptor(Interceptor interceptor) {
-			withOkHttpClientConfig(it ->  it.addInterceptor(interceptor));
+			withOkHttpClientConfig(it -> it.addInterceptor(interceptor));
 			return this;
 		}
+
 		
+		public Builder disableCertificateVerification() {
+			return withOkHttpClientConfig(cfg -> {
+				cfg.hostnameVerifier(new TLSUtil.TrustAllHostnameVerifier());
+				cfg.sslSocketFactory(TLSUtil.createTrustAllSSLContext().getSocketFactory());
+			});
+		}
+
 		public Builder withOkRestClientConfig(OkRestClientConfigurer okRestBuilderConsumer) {
 			okRestBuilderConsumer.accept(this);
 			return this;
@@ -105,29 +112,30 @@ public class OkRestClient {
 			this.directlySpecifiedClient = null;
 			return this;
 		}
+
 		public Builder withBasicAuth(String username, String password) {
 			okHttpClientBuilder.addInterceptor(new BasicAuthInterceptor(username, password));
 			return this;
 		}
+
 		public Builder withConverterRegistryConfig(ConverterRegistryConfigurer converterRegistryConsumer) {
 			converterRegistryConsumer.accept(converterRegistry);
 			return this;
 		}
 
 		public OkRestClient build() {
-			
-			Preconditions.checkState(buildCalled==false,"OkRestClient.Builder.build() may only be called once");
-			buildCalled=true;
-			OkHttpClient c =null;
-			if (directlySpecifiedClient!=null) {
+
+			Preconditions.checkState(buildCalled == false, "OkRestClient.Builder.build() may only be called once");
+			buildCalled = true;
+			OkHttpClient c = null;
+			if (directlySpecifiedClient != null) {
 				// use the pre-configured OkHttpClient since it was specified
 				c = directlySpecifiedClient;
-			}
-			else {
+			} else {
 				// build the OkHttpClient
 				c = okHttpClientBuilder.build();
 			}
-			
+
 			OkRestClient restClient = new OkRestClient();
 			restClient.okHttpClient = c;
 			restClient.registry = converterRegistry;
@@ -135,8 +143,8 @@ public class OkRestClient {
 
 			okHttpClientBuilder = null;
 			converterRegistry = null;
-			directlySpecifiedClient=null;
-			
+			directlySpecifiedClient = null;
+
 			Preconditions.checkState(restClient.okHttpClient != null);
 			Preconditions.checkState(restClient.registry != null);
 
