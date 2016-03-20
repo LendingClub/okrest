@@ -42,7 +42,7 @@ String name = new OkRestClient.Builder().build()
 Configuration
 -------------
 
-OkRest will create an OkHttpClient instance to be used internally:
+OkRest will automatically create an OkHttpClient instance to be used internally:
 
 ```java
 OkRestClient client = new OkRestClient.Builder().build();
@@ -66,7 +66,7 @@ OkRestClient client = new OkRestClient.Builder().withOkHttpClient(okHttpClient).
 Similarly, if you already have an OkHttpClient.Builder instance, you can pass that in.  This would be needed if you have an immutable OkHttpClient instance and need to copy/modify the config:
 
 ```java
-OkRestClient client = new OkRestClient.Builder().withOkHttpClientBuilder(okHttpClient).build();
+OkRestClient client = new OkRestClient.Builder().withOkHttpClientBuilder(okHttpClientBuilder).build();
 ```
 
 Remember: OkHttpClient and OkRestClient instances should be shared where possible. 
@@ -75,7 +75,7 @@ Change Log
 -----------
 
 
-### 3.0.0 
+### 3.0.1
 
 OkRest 3 is a major release that tracks OkHttp 3.x.  
 
