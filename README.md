@@ -52,7 +52,9 @@ To configure the OkHttpClient instance during configuration, there is a handy me
 which will be executed during construction of the OkHttpClient.  Beautiful!
 
 ```java
-OkRestClient client = new OkRestClient.Builder().withOkHttpClientConfig(cfg -> cfg.addInterceptor(myInterceptor)).build();
+OkRestClient client = new OkRestClient.Builder()
+                            .withOkHttpClientConfig(cfg -> cfg.addInterceptor(myInterceptor))
+                            .build();
 ```
 
 If you already have an OkHttpClient that you'd like to use, you can tell OkRest to use that:
