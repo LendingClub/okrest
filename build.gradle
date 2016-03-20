@@ -3,10 +3,10 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: "jacoco"
-apply plugin: "signing"
+
 
 group 'io.macgyver.okrest3'
-version = "3.0.1a"
+version = "3.0.2"
 
 
 configurations {
@@ -73,16 +73,14 @@ uploadArchives {
 			if (!project.has('BINTRAY_KEY')) {
 				project.ext['BINTRAY_KEY'] = System.getenv("BINTRAY_KEY")
 			}
-			
-			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-			
+				
             repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/robschoening/io-macgyver/okrest3'){
                 authentication(userName: BINTRAY_USER, password: BINTRAY_KEY)
 			}
             pom.project {
 				
 				name 'okrest'
-				description 'REST Client for Neo4j'
+				description 'REST Wrapper for OkHttp'
 				url 'https://github.com/LendingClub/okrest'
                 licenses {
                     license {
@@ -107,27 +105,6 @@ uploadArchives {
     }
 }
 
-signing {
-	sign configurations.archives
-}
-
-signArchives.onlyIf { 
-	
-    def keyringUrl = System.getenv("SIGNING_KEYRING_URL")
-	project.ext['signing.keyId'] = System.getenv("SIGNING_KEY_ID")
-	project.ext['signing.password'] = System.getenv("SIGNING_PASSWORD")
-	project.ext['signing.secretKeyRingFile'] = new File("./.gnupg/secring.gpg")
-	
-	def signingPropertiesSet = project.ext.has('signing.keyId') && keyringUrl
-	if ((!signingPropertiesSet) && false ) {
-		println "properties required to sign artifacts not set -- disabling code signing"
-	}
-	else {
-		new File("./.gnupg").mkdirs()
-		ant.get(src: keyringUrl, dest: "./.gnupg/secring.gpg", verbose:true)
-	}
-	return signingPropertiesSet
-}
 
 jacocoTestReport {
     group = "reporting"
