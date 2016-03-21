@@ -74,8 +74,11 @@ Remember: OkHttpClient and OkRestClient instances should be shared where possibl
 Change Log
 -----------
 
+### 3.0.3
 
-### 3.0.1
+* Added ability to set query parameters from a map or variable argument list
+
+### 3.0.2
 
 OkRest 3 is a major release that tracks OkHttp 3.x.  
 

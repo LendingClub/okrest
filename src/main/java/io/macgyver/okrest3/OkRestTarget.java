@@ -8,9 +8,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Map;
+import java.util.Objects;
+
+
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import okhttp3.Call;
 import okhttp3.Headers;
@@ -177,7 +182,52 @@ public class OkRestTarget {
 		return headers;
 	}
 
-	public OkRestTarget queryParameter(String key, Object... vals) {
+	public OkRestTarget queryParam(Object ...vals) {
+		
+		if (vals==null || vals.length==0) {
+			return this;
+		}
+		
+		OkRestTarget copy = clone();
+		
+		
+		if (vals!=null && vals.length %2 !=0) {
+			throw new IllegalArgumentException("queryParameters() must have an even number of key value pair arguments");
+		}
+		
+		for (int i=0; vals!=null &&  i<vals.length; i+=2) {
+			String key = Objects.toString(vals[i],"");
+			String val = Objects.toString(vals[i+1],"");
+			if (Strings.isNullOrEmpty(key)) {
+				throw new IllegalArgumentException("query parameter key cannot be null or empty");
+			}
+			copy.uriBuilder.queryParam(key,val);
+		}
+		return copy;
+	}
+	
+	public OkRestTarget queryParam(Map<?,?> m) {
+		if (m==null) {
+			return this;
+		}
+		OkRestTarget copy = clone();
+		
+		m.entrySet().forEach(entry -> {
+			String stringKey = Objects.toString(entry.getKey(),"");
+			if (Strings.isNullOrEmpty(stringKey)) {
+				throw new IllegalArgumentException("query parameter key cannot be null or empty");
+			}
+			String stringVal = Objects.toString(entry.getValue(),"");
+			copy.uriBuilder.queryParam(stringKey, stringVal);
+		});
+		
+		return copy;
+		
+	}
+	
+	
+
+	public OkRestTarget queryParameMultiValue(String key, Object... vals) {
 
 		OkRestTarget copy = clone();
 

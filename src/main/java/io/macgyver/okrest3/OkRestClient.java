@@ -1,18 +1,18 @@
 package io.macgyver.okrest3;
 
-import io.macgyver.okrest3.compat.OkUriBuilder;
-import io.macgyver.okrest3.converter.ConverterRegistry;
-import io.macgyver.okrest3.converter.ConverterRegistryConfigurer;
-
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
 
+import io.macgyver.okrest3.compat.OkUriBuilder;
+import io.macgyver.okrest3.converter.ConverterRegistry;
+import io.macgyver.okrest3.converter.ConverterRegistryConfigurer;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -23,6 +23,7 @@ public class OkRestClient {
 
 	ConverterRegistry registry = null;
 
+	static AtomicLong constructorCount= new AtomicLong(0);
 	OkRestClient() {
 
 	}
@@ -71,7 +72,12 @@ public class OkRestClient {
 		return registry;
 	}
 
+	public static class DiagnosticStackTrace extends RuntimeException {
+		
+	}
 	public static class Builder {
+		
+		
 		boolean buildCalled = false;
 		OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
 		ConverterRegistry converterRegistry = new ConverterRegistry();
@@ -148,6 +154,15 @@ public class OkRestClient {
 			Preconditions.checkState(restClient.okHttpClient != null);
 			Preconditions.checkState(restClient.registry != null);
 
+			long count = constructorCount.incrementAndGet();
+			if (count>10 && count%10==0) {
+				Logger logger = LoggerFactory.getLogger(OkRestClient.Builder.class);
+				
+				logger.info("potential implementation mistake: {} OkRestClient instances created",count);
+				logger.debug("diagnostic stack trace",new DiagnosticStackTrace());
+				
+			}
+			
 			return restClient;
 
 		}

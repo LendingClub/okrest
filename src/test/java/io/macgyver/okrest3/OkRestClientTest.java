@@ -130,7 +130,7 @@ public class OkRestClientTest {
 
 		assertThat(r.getOkUriBuilder().build().toString()).isEqualTo("https://www.google.com");
 
-		OkRestTarget r2 = r.path("abc").queryParameter("a", "1");
+		OkRestTarget r2 = r.path("abc").queryParam("a", "1");
 
 		assertThat(r).isNotSameAs(r2);
 		assertThat(r.getOkRestClient()).isSameAs(r2.getOkRestClient());
