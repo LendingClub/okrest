@@ -42,7 +42,7 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.12'
+	gradleVersion = '2.14'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
