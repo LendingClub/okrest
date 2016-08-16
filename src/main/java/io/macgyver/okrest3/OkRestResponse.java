@@ -29,16 +29,31 @@ public class OkRestResponse {
 		if (response.isSuccessful()) {
 			try {
 				String contentType = response.header("content-type");
-				MediaType mt = contentType != null ? MediaType.parse(response
-						.header("Content-type")) : null;
-				ResponseBodyConverter c = okRestTarget.findResponseConverter(
-						clazz, Optional.fromNullable(mt));
+				MediaType mt = contentType != null ? MediaType.parse(response.header("Content-type")) : null;
+				ResponseBodyConverter c = okRestTarget.findResponseConverter(clazz, Optional.fromNullable(mt));
 				return c.convert(response, clazz);
 			} catch (IOException e) {
+				if (response!=null) {
+					response.body().close();
+				}
 				throw new OkRestException(e);
 			}
+			catch (RuntimeException e) {
+				if (response!=null) {
+					response.body().close();
+				}
+				throw e;
+			}
 		} else {
-			return okRestTarget.getOkRestClient().getConverterRegistry().findErrorHandler(clazz).handleError(response, clazz);
+			try {
+				return okRestTarget.getOkRestClient().getConverterRegistry().findErrorHandler(clazz)
+						.handleError(response, clazz);
+			} finally {
+				if (response != null) {
+					response.body().close();
+				}
+			}
 		}
+
 	}
 }

@@ -73,6 +73,13 @@ Remember: OkHttpClient and OkRestClient instances should be shared where possibl
 
 Change Log
 -----------
+### 3.1.0
+
+* Properly close all fully consumed streams
+* Upgrade to OkHttp 3.4.1
+* Remove LoggingInterceptor -- the one from OkHttp is fine
+
+### 3.0.4
 
 ### 3.0.3
 
