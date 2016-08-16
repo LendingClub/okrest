@@ -6,7 +6,7 @@ apply plugin: "jacoco"
 
 
 group 'io.macgyver.okrest3'
-version = "3.0.5"
+version = "3.1.0"
 
 
 configurations {
@@ -42,7 +42,7 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.14'
+	gradleVersion = '3.0'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -67,10 +67,10 @@ uploadArchives {
             name = 'macgyver-bintray'
            
 			
-			if (!project.has('BINRAY_USER')) {
+			if (!project.hasProperty('BINRAY_USER')) {
 				project.ext['BINTRAY_USER']=System.getenv("BINTRAY_USER")
 			}
-			if (!project.has('BINTRAY_KEY')) {
+			if (!project.hasProperty('BINTRAY_KEY')) {
 				project.ext['BINTRAY_KEY'] = System.getenv("BINTRAY_KEY")
 			}
 				
