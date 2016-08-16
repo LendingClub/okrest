@@ -22,7 +22,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
-import io.macgyver.okrest3.LoggingInterceptor.Level;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -51,7 +50,6 @@ public class OkRestClientTest {
 	public void setup() {
 
 		target = new OkRestClient.Builder()
-				.withOkHttpClientConfig(it -> it.interceptors().add(new LoggingInterceptor().withLevel(Level.BODY)))
 				.build().uri(mockServer.url("/").toString());
 
 	}

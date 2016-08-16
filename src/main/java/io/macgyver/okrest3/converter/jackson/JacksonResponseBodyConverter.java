@@ -23,10 +23,15 @@ public class JacksonResponseBodyConverter extends ResponseBodyConverter {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T convert(Response r, Class<? extends T> t) throws IOException {
+		
 		try (InputStream is = r.body().byteStream()) {
 			return (T) mapper.readTree(is);
 		}
-		
+		finally {
+			if (r!=null) {
+				r.body().close();
+			}
+		}
 	
 	}
 

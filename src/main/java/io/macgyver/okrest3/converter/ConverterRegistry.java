@@ -19,13 +19,11 @@ import okhttp3.Response;
 
 public class ConverterRegistry {
 
-	boolean immutable=false;
-	
+	boolean immutable = false;
+
 	Logger logger = LoggerFactory.getLogger(ConverterRegistry.class);
-	List<RequestBodyConverter> requestConverters = Lists
-			.newCopyOnWriteArrayList();
-	List<ResponseBodyConverter> responseConverters = Lists
-			.newCopyOnWriteArrayList();
+	List<RequestBodyConverter> requestConverters = Lists.newCopyOnWriteArrayList();
+	List<ResponseBodyConverter> responseConverters = Lists.newCopyOnWriteArrayList();
 	private static ConverterRegistry defaultRegistry = new ConverterRegistry();
 
 	private ResponseErrorHandler defaultResponseErrorHandler = new DefaultResponseErrorHandler();
@@ -33,16 +31,30 @@ public class ConverterRegistry {
 	public ConverterRegistry() {
 
 		requestConverters.add(new PassThroughRequestBodyConverter());
-		addRequestBodyConverter(
-				"io.macgyver.okrest3.converter.jackson.JacksonRequestBodyConverter",
-				false); // do not fail if jackson is not available at runtime
+		addRequestBodyConverter("io.macgyver.okrest3.converter.jackson.JacksonRequestBodyConverter", false); // do
+																												// not
+																												// fail
+																												// if
+																												// jackson
+																												// is
+																												// not
+																												// available
+																												// at
+																												// runtime
 		requestConverters.add(new StringRequestBodyConverter());
 		requestConverters.add(new FileRequestBodyConverter());
 		requestConverters.add(new ByteArrayRequestBodyConverter());
 
-		addResponseBodyConverter(
-				"io.macgyver.okrest3.converter.jackson.JacksonResponseBodyConverter",
-				false);  // do not fail if jackson is not available at runtime
+		addResponseBodyConverter("io.macgyver.okrest3.converter.jackson.JacksonResponseBodyConverter", false); // do
+																												// not
+																												// fail
+																												// if
+																												// jackson
+																												// is
+																												// not
+																												// available
+																												// at
+																												// runtime
 		responseConverters.add(new StringResponseBodyConverter());
 		responseConverters.add(new ByteArrayResponseBodyConverter());
 		responseConverters.add(new InputStreamResponseBodyConverter());
@@ -58,11 +70,13 @@ public class ConverterRegistry {
 	}
 
 	public void markImmutable() {
-		immutable=true;
+		immutable = true;
 	}
+
 	public void assertNotImmutable() {
-		Preconditions.checkState(immutable==false,"ConverterRegistry is immutable after construction");
+		Preconditions.checkState(immutable == false, "ConverterRegistry is immutable after construction");
 	}
+
 	public void addResponseBodyConverter(ResponseBodyConverter c) {
 		assertNotImmutable();
 		Preconditions.checkNotNull(c);
@@ -78,8 +92,7 @@ public class ConverterRegistry {
 	public void addRequestBodyConverter(String s, boolean failOnError) {
 		assertNotImmutable();
 		try {
-			RequestBodyConverter c = (RequestBodyConverter) Class.forName(s)
-					.newInstance();
+			RequestBodyConverter c = (RequestBodyConverter) Class.forName(s).newInstance();
 			addRequestBodyConverter(c);
 		} catch (Throwable e) {
 			if (failOnError) {
@@ -99,8 +112,7 @@ public class ConverterRegistry {
 	public void addResponseBodyConverter(String s, boolean failOnError) {
 		assertNotImmutable();
 		try {
-			ResponseBodyConverter c = (ResponseBodyConverter) Class.forName(s)
-					.newInstance();
+			ResponseBodyConverter c = (ResponseBodyConverter) Class.forName(s).newInstance();
 			addResponseBodyConverter(c);
 		} catch (Throwable e) {
 			if (failOnError) {
@@ -118,30 +130,25 @@ public class ConverterRegistry {
 	}
 
 	public RequestBodyConverter findRequestConverter(Object input) {
-		
-		
+
 		for (RequestBodyConverter c : requestConverters) {
 			if (c.supports(input)) {
 				return c;
 			}
 		}
-		throw new IllegalArgumentException("could not find type converter for "
-				+ input.getClass());
+		throw new IllegalArgumentException("could not find type converter for " + input.getClass());
 	}
 
-	public ResponseBodyConverter findResponseConverter(Class<?> desiredType,
-			Optional<MediaType> mt) {
+	public ResponseBodyConverter findResponseConverter(Class<?> desiredType, Optional<MediaType> mt) {
 		for (ResponseBodyConverter c : responseConverters) {
 			if (c.supports(desiredType, mt)) {
 				return c;
 			}
 		}
-		throw new IllegalArgumentException("coult not find converter for: "
-				+ desiredType);
+		throw new IllegalArgumentException("coult not find converter for: " + desiredType);
 	}
 
-	public static class ByteArrayRequestBodyConverter extends
-			RequestBodyConverter {
+	public static class ByteArrayRequestBodyConverter extends RequestBodyConverter {
 		@Override
 		public boolean supports(Object input) {
 			return input instanceof byte[];
@@ -169,8 +176,7 @@ public class ConverterRegistry {
 		}
 	}
 
-	public static class StringResponseBodyConverter extends
-			ResponseBodyConverter {
+	public static class StringResponseBodyConverter extends ResponseBodyConverter {
 
 		@Override
 		public boolean supports(Class<?> t, Optional<MediaType> mediaType) {
@@ -179,63 +185,64 @@ public class ConverterRegistry {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T convert(Response r, Class<? extends T> t)
-				throws IOException {
-			return (T) r.body().string();
+		public <T> T convert(Response r, Class<? extends T> t) throws IOException {
+			try {
+				return (T) r.body().string();
+			} finally {
+				r.body().close();
+			}
 		}
 
 	}
 
-	public static class InputStreamResponseBodyConverter extends
-			ResponseBodyConverter {
+	public static class InputStreamResponseBodyConverter extends ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class<? extends Object> t,
-				Optional<MediaType> mediaType) {
+		public boolean supports(Class<? extends Object> t, Optional<MediaType> mediaType) {
 			return InputStream.class.isAssignableFrom(t);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T convert(Response r, Class<? extends T> t)
-				throws IOException {
+		public <T> T convert(Response r, Class<? extends T> t) throws IOException {
 
+			// this byte stream must be consumed and closed by the caller
 			return (T) r.body().byteStream();
 		}
 
 	}
 
-	public static class ByteArrayResponseBodyConverter extends
-			ResponseBodyConverter {
+	public static class ByteArrayResponseBodyConverter extends ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class<? extends Object> t,
-				Optional<MediaType> mediaType) {
+		public boolean supports(Class<? extends Object> t, Optional<MediaType> mediaType) {
 			return byte[].class.isAssignableFrom(t);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T convert(Response r, Class<? extends T> t)
-				throws IOException {
-			return (T) r.body().bytes();
+		public <T> T convert(Response r, Class<? extends T> t) throws IOException {
+			try {
+				return (T) r.body().bytes();
+			} finally {
+				r.body().close();
+			}
 		}
 
 	}
 
-	public static class ReaderResponseBodyConverter extends
-			ResponseBodyConverter {
+	public static class ReaderResponseBodyConverter extends ResponseBodyConverter {
 
 		@Override
-		public boolean supports(Class<? extends Object> t,
-				Optional<MediaType> mediaType) {
+		public boolean supports(Class<? extends Object> t, Optional<MediaType> mediaType) {
 			return Reader.class.isAssignableFrom(t);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <T> T convert(Response r, Class<? extends T> t) throws IOException
-			 {
+		public <T> T convert(Response r, Class<? extends T> t) throws IOException {
+			
+			// the body needs to be fully consumed by the caller
 			return ((T) r.body().charStream());
 		}
 
@@ -257,8 +264,7 @@ public class ConverterRegistry {
 
 	}
 
-	public static class PassThroughRequestBodyConverter extends
-			RequestBodyConverter {
+	public static class PassThroughRequestBodyConverter extends RequestBodyConverter {
 
 		@Override
 		public boolean supports(Object input) {
@@ -284,9 +290,9 @@ public class ConverterRegistry {
 	}
 
 	public ResponseErrorHandler findErrorHandler(Class<? extends Object> clazz) {
-		// Eventually we may want to allow for custom error handlers to be registered
+		// Eventually we may want to allow for custom error handlers to be
+		// registered
 		return defaultResponseErrorHandler;
 	}
-	
-	
+
 }

@@ -23,6 +23,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class OkRestTarget {
 
@@ -44,11 +45,15 @@ public class OkRestTarget {
 
 		public OkRestResponse execute() {
 
+			Response response = null;
 			try {
 				Call c = getOkHttpClient().newCall(okBuilder.build());
-
-				return new OkRestResponse(OkRestTarget.this, c.execute());
+				response = c.execute();
+				return new OkRestResponse(OkRestTarget.this, response);
 			} catch (IOException e) {
+				if (response!=null) {
+					response.body().close();
+				}
 				throw new OkRestException(e);
 			}
 
