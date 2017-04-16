@@ -13,15 +13,15 @@ general:
         
 test:
     override:
-        - ./gradlew --no-daemon clean check 
+        - ./gradlew  clean check 
     post:
         - mkdir -p $CIRCLE_TEST_REPORTS/junit/
         - find . -type f -regex ".*/build/test-results/.*.xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        - ./gradlew --no-daemon jacocoTestReport
+        - ./gradlew  jacocoTestReport
         - bash <(curl -s https://codecov.io/bash)        
         
 deployment:
     bintray:
         branch: bintray
         commands:
-            - ./gradlew --no-daemon uploadArchives
+            - ./gradlew  uploadArchives
