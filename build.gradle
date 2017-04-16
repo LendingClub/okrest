@@ -9,7 +9,7 @@ apply plugin: 'maven'
 apply plugin: "jacoco"
 
 
-group 'io.macgyver.okrest3'
+group 'org.lendingclub.okrest3'
 version = "3.7.0"
 
 

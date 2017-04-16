@@ -75,6 +75,12 @@ Remember: OkHttpClient and OkRestClient instances should be shared where possibl
 
 Change Log
 -----------
+
+### 3.7.0 -- 2017-04-15
+* OkHttp 3.7.0
+* Package change from io.macgyver.okrest3 to org.lendingclub.okrest3
+* GroupId change form io.macgyver.okrest3 to org.lendingclub.okrest3
+
 ### 3.1.0
 
 * Properly close all fully consumed streams
