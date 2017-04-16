@@ -1,3 +1,7 @@
+plugins {
+    id "com.github.hierynomus.license" version "0.13.1"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -6,7 +10,7 @@ apply plugin: "jacoco"
 
 
 group 'io.macgyver.okrest3'
-version = "3.2.0"
+version = "3.7.0"
 
 
 configurations {
@@ -41,8 +45,13 @@ dependencies {
 
 }
 
+license {
+    header rootProject.file('LICENSE')
+    strictCheck true
+}
+    
 task wrapper(type: Wrapper) {
-	gradleVersion = '3.3'
+	gradleVersion = '3.5'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -119,9 +128,6 @@ jacocoTestReport {
     additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
 }
 
-task (none) << {
-	// dummy task to do nothing
-}
 
 
 if (JavaVersion.current().isJava8Compatible()) {

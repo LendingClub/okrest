@@ -30,7 +30,7 @@ public class OkRestTargetTest {
 		Assertions.assertThat(rr.getRequestLine()).isEqualTo("GET /foo?foo=bar&baz=1 HTTP/1.1");
 		
 		mockServer.enqueue(new MockResponse().setBody("bar"));
-		new OkRestClient.Builder().build().uri(mockServer.url("/foo").toString()).queryParameMultiValue("a","b","c").queryParam("foo","bar","baz","1").get().execute().getBody(String.class);
+		new OkRestClient.Builder().build().uri(mockServer.url("/foo").toString()).queryParamMultiValue("a","b","c").queryParam("foo","bar","baz","1").get().execute().getBody(String.class);
 		
 		 rr = mockServer.takeRequest();
 		

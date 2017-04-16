@@ -3,7 +3,8 @@ OkRest
 
 [![Circle CI](https://circleci.com/gh/LendingClub/okrest.svg?style=svg)](https://circleci.com/gh/LendingClub/okrest) 
 [![Download](https://img.shields.io/maven-central/v/io.macgyver.okrest3/okrest.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.macgyver.okrest3%22)
-[ ![Download](https://api.bintray.com/packages/robschoening/io-macgyver/okrest3/images/download.svg) ](https://bintray.com/robschoening/io-macgyver/okrest3/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/lendingclub/OSS/okrest/images/download.svg) ](https://bintray.com/lendingclub/OSS/okrest/_latestVersion)
+
 
 OkRest is a fluent REST client that is built on Square's excellent [OkHttp](https://square.github.io/okhttp/) client.
 

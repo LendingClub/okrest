@@ -232,7 +232,7 @@ public class OkRestTarget {
 	
 	
 
-	public OkRestTarget queryParameMultiValue(String key, Object... vals) {
+	public OkRestTarget queryParamMultiValue(String key, Object... vals) {
 
 		OkRestTarget copy = clone();
 
