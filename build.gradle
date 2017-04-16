@@ -6,7 +6,7 @@ apply plugin: "jacoco"
 
 
 group 'io.macgyver.okrest3'
-version = "3.2.0"
+version = "3.7.0"
 
 
 configurations {
@@ -42,7 +42,7 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '3.3'
+	gradleVersion = '3.5'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
