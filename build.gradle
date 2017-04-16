@@ -119,9 +119,6 @@ jacocoTestReport {
     additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
 }
 
-task (none) << {
-	// dummy task to do nothing
-}
 
 
 if (JavaVersion.current().isJava8Compatible()) {
