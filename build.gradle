@@ -10,7 +10,7 @@ apply plugin: "jacoco"
 
 
 group 'org.lendingclub.okrest3'
-version = "3.7.0"
+version = "3.7.0a"
 
 
 configurations {
@@ -83,7 +83,7 @@ uploadArchives {
 				project.ext['BINTRAY_KEY'] = System.getenv("BINTRAY_KEY")
 			}
 				
-            repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/lendingclub/OSS/okrest'){
+            repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/lendingclub/OSS/okrest3'){
                 authentication(userName: BINTRAY_USER, password: BINTRAY_KEY)
 			}
             pom.project {
