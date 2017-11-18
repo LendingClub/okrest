@@ -1,7 +1,3 @@
-plugins {
-    id "com.github.hierynomus.license" version "0.13.1"
-}
-
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -9,8 +5,8 @@ apply plugin: 'maven'
 apply plugin: "jacoco"
 
 
-group 'org.lendingclub.okrest3'
-version = "3.7.0a"
+group 'io.macgyver.okrest3'
+version = "${OKREST3_VERSION}"
 
 
 configurations {
@@ -45,11 +41,6 @@ dependencies {
 
 }
 
-license {
-    header rootProject.file('LICENSE')
-    strictCheck true
-}
-    
 task wrapper(type: Wrapper) {
 	gradleVersion = '3.5'
 }
@@ -83,7 +74,7 @@ uploadArchives {
 				project.ext['BINTRAY_KEY'] = System.getenv("BINTRAY_KEY")
 			}
 				
-            repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/lendingclub/OSS/okrest3'){
+            repository(id: 'macgyver-bintray', url: 'https://api.bintray.com/maven/lendingclub/OSS/okrest'){
                 authentication(userName: BINTRAY_USER, password: BINTRAY_KEY)
 			}
             pom.project {
