@@ -1,7 +1,7 @@
 OkRest
 ======
 
-[![Circle CI](https://circleci.com/gh/LendingClub/okrest.svg?style=svg)](https://circleci.com/gh/LendingClub/okrest) 
+[![Build status](https://badge.buildkite.com/4377d9bc4cdda4c41b9452343d52fbfe3afdd9b66bddf964cf.svg?branch=master)](https://buildkite.com/lendingclub/okrest)
 [![Download](https://img.shields.io/maven-central/v/io.macgyver.okrest3/okrest.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.macgyver.okrest3%22)
 [ ![Download](https://api.bintray.com/packages/robschoening/io-macgyver/okrest3/images/download.svg) ](https://bintray.com/robschoening/io-macgyver/okrest3/_latestVersion)
 
