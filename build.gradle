@@ -54,7 +54,7 @@ license {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '4.3'
+	gradleVersion = "$GRADLE_VERSION"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
